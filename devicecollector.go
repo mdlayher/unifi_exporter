@@ -14,6 +14,10 @@ type DeviceCollector struct {
 	AdoptedDevices   *prometheus.GaugeVec
 	UnadoptedDevices *prometheus.GaugeVec
 
+	TotalBytes       *prometheus.GaugeVec
+	ReceivedBytes    *prometheus.GaugeVec
+	TransmittedBytes *prometheus.GaugeVec
+
 	c     *unifi.Client
 	sites []*unifi.Site
 }
@@ -24,8 +28,12 @@ var _ prometheus.Collector = &DeviceCollector{}
 // NewDeviceCollector creates a new DeviceCollector which collects metrics for
 // a specified site.
 func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
-	const subsystem = "devices"
-	labels := []string{"site"}
+	const (
+		subsystem = "devices"
+
+		labelSite = "site"
+		labelID   = "id"
+	)
 
 	return &DeviceCollector{
 		TotalDevices: prometheus.NewGaugeVec(
@@ -35,7 +43,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Name:      "total",
 				Help:      "Total number of devices registered to UniFi Controller, partitioned by site",
 			},
-			labels,
+			[]string{labelSite},
 		),
 
 		AdoptedDevices: prometheus.NewGaugeVec(
@@ -45,7 +53,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Name:      "adopted",
 				Help:      "Number of devices known to UniFi Controller which are adopted, partitioned by site",
 			},
-			labels,
+			[]string{labelSite},
 		),
 
 		UnadoptedDevices: prometheus.NewGaugeVec(
@@ -55,7 +63,37 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Name:      "unadopted",
 				Help:      "Number of devices known to UniFi Controller which are not adopted, partitioned by site",
 			},
-			labels,
+			[]string{labelSite},
+		),
+
+		TotalBytes: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "total_bytes",
+				Help:      "Total number of bytes received and transmitted by devices registered to UniFi Controller, partitioned by site and device ID",
+			},
+			[]string{labelSite, labelID},
+		),
+
+		ReceivedBytes: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "received_bytes",
+				Help:      "Number of bytes received by devices registered to UniFi Controller, partitioned by site and device ID",
+			},
+			[]string{labelSite, labelID},
+		),
+
+		TransmittedBytes: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "transmitted_bytes",
+				Help:      "Number of bytes transmitted by devices registered to UniFi Controller, partitioned by site and device ID",
+			},
+			[]string{labelSite, labelID},
 		),
 
 		c:     c,
@@ -71,6 +109,10 @@ func (c *DeviceCollector) collectors() []prometheus.Collector {
 		c.TotalDevices,
 		c.AdoptedDevices,
 		c.UnadoptedDevices,
+
+		c.TotalBytes,
+		c.ReceivedBytes,
+		c.TransmittedBytes,
 	}
 }
 
@@ -83,10 +125,11 @@ func (c *DeviceCollector) collect() error {
 			return err
 		}
 
-		lv := siteDescription(s.Description)
+		siteLabel := siteDescription(s.Description)
 
-		c.TotalDevices.WithLabelValues(lv).Set(float64(len(devices)))
-		c.collectDeviceAdoptions(lv, devices)
+		c.TotalDevices.WithLabelValues(siteLabel).Set(float64(len(devices)))
+		c.collectDeviceAdoptions(siteLabel, devices)
+		c.collectDeviceBytes(siteLabel, devices)
 	}
 
 	return nil
@@ -94,7 +137,7 @@ func (c *DeviceCollector) collect() error {
 
 // collectDeviceAdoptions collects counts for number of adopted and unadopted
 // UniFi devices.
-func (c *DeviceCollector) collectDeviceAdoptions(lv string, devices []*unifi.Device) {
+func (c *DeviceCollector) collectDeviceAdoptions(siteLabel string, devices []*unifi.Device) {
 	var adopted, unadopted int
 
 	for _, d := range devices {
@@ -105,8 +148,17 @@ func (c *DeviceCollector) collectDeviceAdoptions(lv string, devices []*unifi.Dev
 		}
 	}
 
-	c.AdoptedDevices.WithLabelValues(lv).Set(float64(adopted))
-	c.UnadoptedDevices.WithLabelValues(lv).Set(float64(unadopted))
+	c.AdoptedDevices.WithLabelValues(siteLabel).Set(float64(adopted))
+	c.UnadoptedDevices.WithLabelValues(siteLabel).Set(float64(unadopted))
+}
+
+// collectDeviceBytes collects receive and transmit byte counts for UniFi devices.
+func (c *DeviceCollector) collectDeviceBytes(siteLabel string, devices []*unifi.Device) {
+	for _, d := range devices {
+		c.TotalBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.TotalBytes))
+		c.ReceivedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.ReceiveBytes))
+		c.TransmittedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.TransmitBytes))
+	}
 }
 
 // Describe sends the descriptors of each metric over to the provided channel.
