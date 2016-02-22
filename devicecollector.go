@@ -45,7 +45,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "total",
-				Help:      "Total number of devices registered , partitioned by site",
+				Help:      "Total number of devices, partitioned by site",
 			},
 			[]string{labelSite},
 		),
