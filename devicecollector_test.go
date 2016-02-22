@@ -31,19 +31,27 @@ func TestDeviceCollector(t *testing.T) {
 			"stat": {
 				"bytes": 100,
 				"rx_bytes": 80,
-				"tx_bytes": 20
+				"tx_bytes": 20,
+				"rx_packets": 4,
+				"tx_packets": 1,
+				"tx_dropped": 1
 			}
 		}
 	]
 }
 `),
 			matches: []*regexp.Regexp{
-				regexp.MustCompile(`unifi_devices_adopted{site="default"} 1`),
-				regexp.MustCompile(`unifi_devices_received_bytes{id="abc",site="default"} 80`),
-				regexp.MustCompile(`unifi_devices_total_bytes{id="abc",site="default"} 100`),
 				regexp.MustCompile(`unifi_devices_total{site="default"} 1`),
-				regexp.MustCompile(`unifi_devices_transmitted_bytes{id="abc",site="default"} 20`),
+				regexp.MustCompile(`unifi_devices_adopted{site="default"} 1`),
 				regexp.MustCompile(`unifi_devices_unadopted{site="default"} 0`),
+
+				regexp.MustCompile(`unifi_devices_total_bytes{id="abc",site="default"} 100`),
+				regexp.MustCompile(`unifi_devices_received_bytes{id="abc",site="default"} 80`),
+				regexp.MustCompile(`unifi_devices_transmitted_bytes{id="abc",site="default"} 20`),
+
+				regexp.MustCompile(`unifi_devices_received_packets{id="abc",site="default"} 4`),
+				regexp.MustCompile(`unifi_devices_transmitted_packets{id="abc",site="default"} 1`),
+				regexp.MustCompile(`unifi_devices_transmitted_dropped{id="abc",site="default"} 1`),
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
@@ -62,7 +70,10 @@ func TestDeviceCollector(t *testing.T) {
 			"stat": {
 				"bytes": 100,
 				"rx_bytes": 80,
-				"tx_bytes": 20
+				"tx_bytes": 20,
+				"rx_packets": 4,
+				"tx_packets": 1,
+				"tx_dropped": 1
 			}
 		},
 		{
@@ -72,7 +83,10 @@ func TestDeviceCollector(t *testing.T) {
 			"stat": {
 				"bytes": 200,
 				"rx_bytes": 10,
-				"tx_bytes": 190
+				"tx_bytes": 190,
+				"rx_packets": 1,
+				"tx_packets": 19,
+				"tx_dropped": 1
 			}
 		}
 	]
@@ -87,9 +101,17 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_received_bytes{id="abc",site="default"} 80`),
 				regexp.MustCompile(`unifi_devices_transmitted_bytes{id="abc",site="default"} 20`),
 
+				regexp.MustCompile(`unifi_devices_received_packets{id="abc",site="default"} 4`),
+				regexp.MustCompile(`unifi_devices_transmitted_packets{id="abc",site="default"} 1`),
+				regexp.MustCompile(`unifi_devices_transmitted_dropped{id="abc",site="default"} 1`),
+
 				regexp.MustCompile(`unifi_devices_total_bytes{id="def",site="default"} 200`),
 				regexp.MustCompile(`unifi_devices_received_bytes{id="def",site="default"} 10`),
 				regexp.MustCompile(`unifi_devices_transmitted_bytes{id="def",site="default"} 190`),
+
+				regexp.MustCompile(`unifi_devices_received_packets{id="def",site="default"} 1`),
+				regexp.MustCompile(`unifi_devices_transmitted_packets{id="def",site="default"} 19`),
+				regexp.MustCompile(`unifi_devices_transmitted_dropped{id="def",site="default"} 1`),
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
@@ -108,7 +130,10 @@ func TestDeviceCollector(t *testing.T) {
 			"stat": {
 				"bytes": 100,
 				"rx_bytes": 80,
-				"tx_bytes": 20
+				"tx_bytes": 20,
+				"rx_packets": 4,
+				"tx_packets": 1,
+				"tx_dropped": 1
 			}
 		}
 	]
@@ -123,6 +148,10 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_received_bytes{id="123",site="default"} 80`),
 				regexp.MustCompile(`unifi_devices_transmitted_bytes{id="123",site="default"} 20`),
 
+				regexp.MustCompile(`unifi_devices_received_packets{id="123",site="default"} 4`),
+				regexp.MustCompile(`unifi_devices_transmitted_packets{id="123",site="default"} 1`),
+				regexp.MustCompile(`unifi_devices_transmitted_dropped{id="123",site="default"} 1`),
+
 				regexp.MustCompile(`unifi_devices_total{site="somesite"} 1`),
 				regexp.MustCompile(`unifi_devices_adopted{site="somesite"} 1`),
 				regexp.MustCompile(`unifi_devices_unadopted{site="somesite"} 0`),
@@ -130,6 +159,10 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_total_bytes{id="123",site="somesite"} 100`),
 				regexp.MustCompile(`unifi_devices_received_bytes{id="123",site="somesite"} 80`),
 				regexp.MustCompile(`unifi_devices_transmitted_bytes{id="123",site="somesite"} 20`),
+
+				regexp.MustCompile(`unifi_devices_received_packets{id="123",site="somesite"} 4`),
+				regexp.MustCompile(`unifi_devices_transmitted_packets{id="123",site="somesite"} 1`),
+				regexp.MustCompile(`unifi_devices_transmitted_dropped{id="123",site="somesite"} 1`),
 			},
 			sites: []*unifi.Site{
 				{

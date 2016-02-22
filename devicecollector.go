@@ -18,6 +18,10 @@ type DeviceCollector struct {
 	ReceivedBytes    *prometheus.GaugeVec
 	TransmittedBytes *prometheus.GaugeVec
 
+	ReceivedPackets    *prometheus.GaugeVec
+	TransmittedPackets *prometheus.GaugeVec
+	TransmittedDropped *prometheus.GaugeVec
+
 	c     *unifi.Client
 	sites []*unifi.Site
 }
@@ -96,6 +100,36 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 			[]string{labelSite, labelID},
 		),
 
+		ReceivedPackets: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "received_packets",
+				Help:      "Number of packets received by devices, partitioned by site and device ID",
+			},
+			[]string{labelSite, labelID},
+		),
+
+		TransmittedPackets: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "transmitted_packets",
+				Help:      "Number of packets transmitted by devices, partitioned by site and device ID",
+			},
+			[]string{labelSite, labelID},
+		),
+
+		TransmittedDropped: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "transmitted_dropped",
+				Help:      "Number of packets which are dropped on transmission by devices, partitioned by site and device ID",
+			},
+			[]string{labelSite, labelID},
+		),
+
 		c:     c,
 		sites: sites,
 	}
@@ -113,6 +147,10 @@ func (c *DeviceCollector) collectors() []prometheus.Collector {
 		c.TotalBytes,
 		c.ReceivedBytes,
 		c.TransmittedBytes,
+
+		c.ReceivedPackets,
+		c.TransmittedPackets,
+		c.TransmittedDropped,
 	}
 }
 
@@ -158,6 +196,10 @@ func (c *DeviceCollector) collectDeviceBytes(siteLabel string, devices []*unifi.
 		c.TotalBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.TotalBytes))
 		c.ReceivedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.ReceiveBytes))
 		c.TransmittedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.TransmitBytes))
+
+		c.ReceivedPackets.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.ReceivePackets))
+		c.TransmittedPackets.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.TransmitPackets))
+		c.TransmittedDropped.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.TransmitDropped))
 	}
 }
 
