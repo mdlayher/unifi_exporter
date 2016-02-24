@@ -28,6 +28,10 @@ type DeviceCollector struct {
 	WiredReceivedPackets    *prometheus.GaugeVec
 	WiredTransmittedPackets *prometheus.GaugeVec
 
+	TotalStations *prometheus.GaugeVec
+	UserStations  *prometheus.GaugeVec
+	GuestStations *prometheus.GaugeVec
+
 	c     *unifi.Client
 	sites []*unifi.Site
 }
@@ -43,8 +47,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 	)
 
 	var (
-		labelsSiteOnly = []string{"site"}
-		labelsDevice   = []string{"site", "id", "mac", "name"}
+		labelsSiteOnly       = []string{"site"}
+		labelsDevice         = []string{"site", "id", "mac", "name"}
+		labelsDeviceStations = []string{"site", "id", "mac", "name", "interface", "radio"}
 	)
 
 	return &DeviceCollector{
@@ -178,6 +183,36 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 			labelsDevice,
 		),
 
+		TotalStations: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "stations_total",
+				Help:      "Total number of stations (clients) connected to devices, partitioned by site, device, and wireless radio",
+			},
+			labelsDeviceStations,
+		),
+
+		UserStations: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "stations_user",
+				Help:      "Number of user stations (private clients) connected to devices, partitioned by site, device, and wireless radio",
+			},
+			labelsDeviceStations,
+		),
+
+		GuestStations: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "stations_guest",
+				Help:      "Number of guest stations (public clients) connected to devices, partitioned by site, device, and wireless radio",
+			},
+			labelsDeviceStations,
+		),
+
 		c:     c,
 		sites: sites,
 	}
@@ -205,6 +240,10 @@ func (c *DeviceCollector) collectors() []prometheus.Collector {
 
 		c.WiredReceivedPackets,
 		c.WiredTransmittedPackets,
+
+		c.TotalStations,
+		c.UserStations,
+		c.GuestStations,
 	}
 }
 
@@ -222,6 +261,7 @@ func (c *DeviceCollector) collect() error {
 		c.TotalDevices.WithLabelValues(siteLabel).Set(float64(len(devices)))
 		c.collectDeviceAdoptions(siteLabel, devices)
 		c.collectDeviceBytes(siteLabel, devices)
+		c.collectDeviceStations(siteLabel, devices)
 	}
 
 	return nil
@@ -267,6 +307,31 @@ func (c *DeviceCollector) collectDeviceBytes(siteLabel string, devices []*unifi.
 
 		c.WiredReceivedPackets.WithLabelValues(labels...).Set(float64(d.Stats.Uplink.ReceivePackets))
 		c.WiredTransmittedPackets.WithLabelValues(labels...).Set(float64(d.Stats.Uplink.TransmitPackets))
+	}
+}
+
+// collectDeviceStations collects station counts for UniFi devices.
+func (c *DeviceCollector) collectDeviceStations(siteLabel string, devices []*unifi.Device) {
+	for _, d := range devices {
+		labels := []string{
+			siteLabel,
+			d.ID,
+			d.NICs[0].MAC.String(),
+			d.Name,
+		}
+
+		for _, r := range d.Radios {
+			// Since the radio name and type will be different for each
+			// radio, we copy the original labels slice and append, to avoid
+			// mutating it
+			llabels := make([]string, len(labels))
+			copy(llabels, labels)
+			llabels = append(llabels, r.Name, r.Radio)
+
+			c.TotalStations.WithLabelValues(llabels...).Set(float64(r.Stats.NumberStations))
+			c.UserStations.WithLabelValues(llabels...).Set(float64(r.Stats.NumberUserStations))
+			c.GuestStations.WithLabelValues(llabels...).Set(float64(r.Stats.NumberGuestStations))
+		}
 	}
 }
 
