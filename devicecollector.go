@@ -40,9 +40,11 @@ var _ prometheus.Collector = &DeviceCollector{}
 func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 	const (
 		subsystem = "devices"
+	)
 
-		labelSite = "site"
-		labelID   = "id"
+	var (
+		labelsSiteOnly = []string{"site"}
+		labelsDevice   = []string{"site", "id", "mac", "name"}
 	)
 
 	return &DeviceCollector{
@@ -53,7 +55,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Name:      "total",
 				Help:      "Total number of devices, partitioned by site",
 			},
-			[]string{labelSite},
+			labelsSiteOnly,
 		),
 
 		AdoptedDevices: prometheus.NewGaugeVec(
@@ -63,7 +65,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Name:      "adopted",
 				Help:      "Number of devices which are adopted, partitioned by site",
 			},
-			[]string{labelSite},
+			labelsSiteOnly,
 		),
 
 		UnadoptedDevices: prometheus.NewGaugeVec(
@@ -73,7 +75,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Name:      "unadopted",
 				Help:      "Number of devices which are not adopted, partitioned by site",
 			},
-			[]string{labelSite},
+			labelsSiteOnly,
 		),
 
 		WirelessTotalBytes: prometheus.NewGaugeVec(
@@ -81,9 +83,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_total_bytes",
-				Help:      "Total number of bytes received and transmitted wirelessly by devices, partitioned by site and device ID",
+				Help:      "Total number of bytes received and transmitted wirelessly by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WirelessReceivedBytes: prometheus.NewGaugeVec(
@@ -91,9 +93,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_received_bytes",
-				Help:      "Number of bytes received wirelessly by devices, partitioned by site and device ID",
+				Help:      "Number of bytes received wirelessly by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WirelessTransmittedBytes: prometheus.NewGaugeVec(
@@ -101,9 +103,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_transmitted_bytes",
-				Help:      "Number of bytes transmitted wirelessly by devices, partitioned by site and device ID",
+				Help:      "Number of bytes transmitted wirelessly by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WirelessReceivedPackets: prometheus.NewGaugeVec(
@@ -111,9 +113,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_received_packets",
-				Help:      "Number of packets received wirelessly by devices, partitioned by site and device ID",
+				Help:      "Number of packets received wirelessly by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WirelessTransmittedPackets: prometheus.NewGaugeVec(
@@ -121,9 +123,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_transmitted_packets",
-				Help:      "Number of packets transmitted wirelessly by devices, partitioned by site and device ID",
+				Help:      "Number of packets transmitted wirelessly by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WirelessTransmittedDropped: prometheus.NewGaugeVec(
@@ -131,9 +133,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_transmitted_dropped",
-				Help:      "Number of packets which are dropped on wireless transmission by devices, partitioned by site and device ID",
+				Help:      "Number of packets which are dropped on wireless transmission by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WiredReceivedBytes: prometheus.NewGaugeVec(
@@ -141,9 +143,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_received_bytes",
-				Help:      "Number of bytes received using wired interface by devices, partitioned by site and device ID",
+				Help:      "Number of bytes received using wired interface by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WiredTransmittedBytes: prometheus.NewGaugeVec(
@@ -151,9 +153,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_transmitted_bytes",
-				Help:      "Number of bytes transmitted using wired interface by devices, partitioned by site and device ID",
+				Help:      "Number of bytes transmitted using wired interface by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WiredReceivedPackets: prometheus.NewGaugeVec(
@@ -161,9 +163,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_received_packets",
-				Help:      "Number of packets received using wired interface by devices, partitioned by site and device ID",
+				Help:      "Number of packets received using wired interface by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		WiredTransmittedPackets: prometheus.NewGaugeVec(
@@ -171,9 +173,9 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_transmitted_packets",
-				Help:      "Number of packets transmitted using wired interface by devices, partitioned by site and device ID",
+				Help:      "Number of packets transmitted using wired interface by devices, partitioned by site and device",
 			},
-			[]string{labelSite, labelID},
+			labelsDevice,
 		),
 
 		c:     c,
@@ -245,19 +247,26 @@ func (c *DeviceCollector) collectDeviceAdoptions(siteLabel string, devices []*un
 // collectDeviceBytes collects receive and transmit byte counts for UniFi devices.
 func (c *DeviceCollector) collectDeviceBytes(siteLabel string, devices []*unifi.Device) {
 	for _, d := range devices {
-		c.WirelessTotalBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.TotalBytes))
-		c.WirelessReceivedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.ReceiveBytes))
-		c.WirelessTransmittedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.TransmitBytes))
+		labels := []string{
+			siteLabel,
+			d.ID,
+			d.NICs[0].MAC.String(),
+			d.Name,
+		}
 
-		c.WirelessReceivedPackets.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.ReceivePackets))
-		c.WirelessTransmittedPackets.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.TransmitPackets))
-		c.WirelessTransmittedDropped.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.All.TransmitDropped))
+		c.WirelessTotalBytes.WithLabelValues(labels...).Set(float64(d.Stats.TotalBytes))
+		c.WirelessReceivedBytes.WithLabelValues(labels...).Set(float64(d.Stats.All.ReceiveBytes))
+		c.WirelessTransmittedBytes.WithLabelValues(labels...).Set(float64(d.Stats.All.TransmitBytes))
 
-		c.WiredReceivedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.Uplink.ReceiveBytes))
-		c.WiredTransmittedBytes.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.Uplink.TransmitBytes))
+		c.WirelessReceivedPackets.WithLabelValues(labels...).Set(float64(d.Stats.All.ReceivePackets))
+		c.WirelessTransmittedPackets.WithLabelValues(labels...).Set(float64(d.Stats.All.TransmitPackets))
+		c.WirelessTransmittedDropped.WithLabelValues(labels...).Set(float64(d.Stats.All.TransmitDropped))
 
-		c.WiredReceivedPackets.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.Uplink.ReceivePackets))
-		c.WiredTransmittedPackets.WithLabelValues(siteLabel, d.ID).Set(float64(d.Stats.Uplink.TransmitPackets))
+		c.WiredReceivedBytes.WithLabelValues(labels...).Set(float64(d.Stats.Uplink.ReceiveBytes))
+		c.WiredTransmittedBytes.WithLabelValues(labels...).Set(float64(d.Stats.Uplink.TransmitBytes))
+
+		c.WiredReceivedPackets.WithLabelValues(labels...).Set(float64(d.Stats.Uplink.ReceivePackets))
+		c.WiredTransmittedPackets.WithLabelValues(labels...).Set(float64(d.Stats.Uplink.TransmitPackets))
 	}
 }
 
