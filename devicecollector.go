@@ -2,6 +2,7 @@ package unifiexporter
 
 import (
 	"log"
+	"time"
 
 	"github.com/mdlayher/unifi"
 	"github.com/prometheus/client_golang/prometheus"
@@ -13,6 +14,8 @@ type DeviceCollector struct {
 	TotalDevices     *prometheus.GaugeVec
 	AdoptedDevices   *prometheus.GaugeVec
 	UnadoptedDevices *prometheus.GaugeVec
+
+	UptimeSeconds *prometheus.GaugeVec
 
 	WirelessTotalBytes       *prometheus.GaugeVec
 	WirelessReceivedBytes    *prometheus.GaugeVec
@@ -81,6 +84,16 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Help:      "Number of devices which are not adopted, partitioned by site",
 			},
 			labelsSiteOnly,
+		),
+
+		UptimeSeconds: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name:      "uptime_seconds",
+				Help:      "Device uptime in seconds, partitioned by site and device",
+			},
+			labelsDevice,
 		),
 
 		WirelessTotalBytes: prometheus.NewGaugeVec(
@@ -227,6 +240,8 @@ func (c *DeviceCollector) collectors() []prometheus.Collector {
 		c.AdoptedDevices,
 		c.UnadoptedDevices,
 
+		c.UptimeSeconds,
+
 		c.WirelessTotalBytes,
 		c.WirelessReceivedBytes,
 		c.WirelessTransmittedBytes,
@@ -260,6 +275,7 @@ func (c *DeviceCollector) collect() error {
 
 		c.TotalDevices.WithLabelValues(siteLabel).Set(float64(len(devices)))
 		c.collectDeviceAdoptions(siteLabel, devices)
+		c.collectDeviceUptime(siteLabel, devices)
 		c.collectDeviceBytes(siteLabel, devices)
 		c.collectDeviceStations(siteLabel, devices)
 	}
@@ -282,6 +298,20 @@ func (c *DeviceCollector) collectDeviceAdoptions(siteLabel string, devices []*un
 
 	c.AdoptedDevices.WithLabelValues(siteLabel).Set(float64(adopted))
 	c.UnadoptedDevices.WithLabelValues(siteLabel).Set(float64(unadopted))
+}
+
+// collectDeviceUptime collects device uptime for UniFi devices.
+func (c *DeviceCollector) collectDeviceUptime(siteLabel string, devices []*unifi.Device) {
+	for _, d := range devices {
+		labels := []string{
+			siteLabel,
+			d.ID,
+			d.NICs[0].MAC.String(),
+			d.Name,
+		}
+
+		c.UptimeSeconds.WithLabelValues(labels...).Set(float64(d.Uptime / time.Second))
+	}
 }
 
 // collectDeviceBytes collects receive and transmit byte counts for UniFi devices.

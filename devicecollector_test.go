@@ -59,7 +59,8 @@ func TestDeviceCollector(t *testing.T) {
 				"uplink-tx_bytes": 10,
 				"uplink-rx_packets": 2,
 				"uplink-tx_packets": 1
-			}
+			},
+			"uptime": 10
 		}
 	]
 }
@@ -68,6 +69,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_total{site="default"} 1`),
 				regexp.MustCompile(`unifi_devices_adopted{site="default"} 1`),
 				regexp.MustCompile(`unifi_devices_unadopted{site="default"} 0`),
+
+				regexp.MustCompile(`unifi_devices_uptime_seconds{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="default"} 10`),
 
 				regexp.MustCompile(`unifi_devices_wireless_total_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="default"} 100`),
 				regexp.MustCompile(`unifi_devices_wireless_received_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="default"} 80`),
@@ -135,7 +138,8 @@ func TestDeviceCollector(t *testing.T) {
 				"uplink-tx_bytes": 10,
 				"uplink-rx_packets": 2,
 				"uplink-tx_packets": 1
-			}
+			},
+			"uptime": 10
 		},
 		{
 			"_id": "def",
@@ -172,7 +176,8 @@ func TestDeviceCollector(t *testing.T) {
 				"uplink-tx_bytes": 20,
 				"uplink-rx_packets": 4,
 				"uplink-tx_packets": 2
-			}
+			},
+			"uptime": 20
 		}
 	]
 }
@@ -181,6 +186,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_total{site="default"} 2`),
 				regexp.MustCompile(`unifi_devices_adopted{site="default"} 1`),
 				regexp.MustCompile(`unifi_devices_unadopted{site="default"} 1`),
+
+				regexp.MustCompile(`unifi_devices_uptime_seconds{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="default"} 10`),
 
 				regexp.MustCompile(`unifi_devices_wireless_total_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="default"} 100`),
 				regexp.MustCompile(`unifi_devices_wireless_received_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="default"} 80`),
@@ -202,6 +209,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_stations_user{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="default"} 4`),
 				regexp.MustCompile(`unifi_devices_stations_guest{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="default"} 1`),
 				regexp.MustCompile(`unifi_devices_stations_guest{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="default"} 2`),
+
+				regexp.MustCompile(`unifi_devices_uptime_seconds{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="default"} 20`),
 
 				regexp.MustCompile(`unifi_devices_wireless_total_bytes{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="default"} 200`),
 				regexp.MustCompile(`unifi_devices_wireless_received_bytes{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="default"} 10`),
@@ -269,7 +278,8 @@ func TestDeviceCollector(t *testing.T) {
 				"uplink-tx_bytes": 10,
 				"uplink-rx_packets": 2,
 				"uplink-tx_packets": 1
-			}
+			},
+			"uptime": 10
 		}
 	]
 }
@@ -278,6 +288,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_total{site="default"} 1`),
 				regexp.MustCompile(`unifi_devices_adopted{site="default"} 1`),
 				regexp.MustCompile(`unifi_devices_unadopted{site="default"} 0`),
+
+				regexp.MustCompile(`unifi_devices_uptime_seconds{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="default"} 10`),
 
 				regexp.MustCompile(`unifi_devices_wireless_total_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="default"} 100`),
 				regexp.MustCompile(`unifi_devices_wireless_received_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="default"} 80`),
@@ -303,6 +315,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_total{site="somesite"} 1`),
 				regexp.MustCompile(`unifi_devices_adopted{site="somesite"} 1`),
 				regexp.MustCompile(`unifi_devices_unadopted{site="somesite"} 0`),
+
+				regexp.MustCompile(`unifi_devices_uptime_seconds{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="somesite"} 10`),
 
 				regexp.MustCompile(`unifi_devices_wireless_total_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="somesite"} 100`),
 				regexp.MustCompile(`unifi_devices_wireless_received_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="somesite"} 80`),
