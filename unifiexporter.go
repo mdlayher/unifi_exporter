@@ -34,6 +34,7 @@ func New(c *unifi.Client, sites []*unifi.Site) *Exporter {
 	return &Exporter{
 		collectors: []prometheus.Collector{
 			NewDeviceCollector(c, sites),
+			NewStationCollector(c, sites),
 		},
 	}
 }
