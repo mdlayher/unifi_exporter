@@ -3,7 +3,6 @@
 package unifiexporter
 
 import (
-	"strings"
 	"sync"
 
 	"github.com/mdlayher/unifi"
@@ -57,19 +56,4 @@ func (c *Exporter) Collect(ch chan<- prometheus.Metric) {
 	for _, cc := range c.collectors {
 		cc.Collect(ch)
 	}
-}
-
-// siteDescription a metric label value for Prometheus metrics by
-// normalizing the a site description field.
-func siteDescription(desc string) string {
-	desc = strings.ToLower(desc)
-	return strings.Map(func(r rune) rune {
-		switch r {
-		// TODO(mdlayher): figure out valid set of characters for description
-		case ' ', '-', '_', '.':
-			return -1
-		}
-
-		return r
-	}, desc)
 }

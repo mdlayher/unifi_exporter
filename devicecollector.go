@@ -271,13 +271,11 @@ func (c *DeviceCollector) collect() error {
 			return err
 		}
 
-		siteLabel := siteDescription(s.Description)
-
-		c.TotalDevices.WithLabelValues(siteLabel).Set(float64(len(devices)))
-		c.collectDeviceAdoptions(siteLabel, devices)
-		c.collectDeviceUptime(siteLabel, devices)
-		c.collectDeviceBytes(siteLabel, devices)
-		c.collectDeviceStations(siteLabel, devices)
+		c.TotalDevices.WithLabelValues(s.Description).Set(float64(len(devices)))
+		c.collectDeviceAdoptions(s.Description, devices)
+		c.collectDeviceUptime(s.Description, devices)
+		c.collectDeviceBytes(s.Description, devices)
+		c.collectDeviceStations(s.Description, devices)
 	}
 
 	return nil

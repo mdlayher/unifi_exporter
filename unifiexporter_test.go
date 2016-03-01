@@ -10,36 +10,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-func Test_siteDescription(t *testing.T) {
-	var tests = []struct {
-		in  string
-		out string
-	}{
-		{
-			in:  "Foo Bar",
-			out: "foobar",
-		},
-		{
-			in:  "Foo-Bar_Baz",
-			out: "foobarbaz",
-		},
-		{
-			in:  "Foo bar  Baz - _ .qux",
-			out: "foobarbazqux",
-		},
-	}
-
-	for i, tt := range tests {
-		t.Logf("[%02d] in: %q, out: %q", i, tt.in, tt.out)
-
-		got := siteDescription(tt.in)
-		if want := tt.out; want != got {
-			t.Fatalf("unexpected output:\n- want: %v\n-  got: %v",
-				want, got)
-		}
-	}
-}
-
 func testUniFiClient(t *testing.T, input []byte) (*unifi.Client, func()) {
 	unifiServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json;charset=UTF-8")

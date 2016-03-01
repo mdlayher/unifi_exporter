@@ -117,10 +117,8 @@ func (c *StationCollector) collect() error {
 			return err
 		}
 
-		siteLabel := siteDescription(s.Description)
-
-		c.TotalStations.WithLabelValues(siteLabel).Set(float64(len(stations)))
-		c.collectStationBytes(siteLabel, stations)
+		c.TotalStations.WithLabelValues(s.Description).Set(float64(len(stations)))
+		c.collectStationBytes(s.Description, stations)
 	}
 
 	return nil
