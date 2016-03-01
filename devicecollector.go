@@ -17,7 +17,6 @@ type DeviceCollector struct {
 
 	UptimeSeconds *prometheus.GaugeVec
 
-	WirelessTotalBytes       *prometheus.GaugeVec
 	WirelessReceivedBytes    *prometheus.GaugeVec
 	WirelessTransmittedBytes *prometheus.GaugeVec
 
@@ -58,10 +57,11 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 	return &DeviceCollector{
 		TotalDevices: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
+				// Metric should just be "unifi_devices", so no subsystem, and
+				// use subsystem label as name
 				Namespace: namespace,
-				Subsystem: subsystem,
-				Name:      "total",
-				Help:      "Total number of devices, partitioned by site",
+				Name:      subsystem,
+				Help:      "Total number of devices",
 			},
 			labelsSiteOnly,
 		),
@@ -71,7 +71,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "adopted",
-				Help:      "Number of devices which are adopted, partitioned by site",
+				Help:      "Number of devices which are adopted",
 			},
 			labelsSiteOnly,
 		),
@@ -81,7 +81,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "unadopted",
-				Help:      "Number of devices which are not adopted, partitioned by site",
+				Help:      "Number of devices which are not adopted",
 			},
 			labelsSiteOnly,
 		),
@@ -91,17 +91,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "uptime_seconds",
-				Help:      "Device uptime in seconds, partitioned by site and device",
-			},
-			labelsDevice,
-		),
-
-		WirelessTotalBytes: prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Namespace: namespace,
-				Subsystem: subsystem,
-				Name:      "wireless_total_bytes",
-				Help:      "Total number of bytes received and transmitted wirelessly by devices, partitioned by site and device",
+				Help:      "Device uptime in seconds",
 			},
 			labelsDevice,
 		),
@@ -111,7 +101,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_received_bytes",
-				Help:      "Number of bytes received wirelessly by devices, partitioned by site and device",
+				Help:      "Number of bytes received wirelessly by devices",
 			},
 			labelsDevice,
 		),
@@ -121,7 +111,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_transmitted_bytes",
-				Help:      "Number of bytes transmitted wirelessly by devices, partitioned by site and device",
+				Help:      "Number of bytes transmitted wirelessly by devices",
 			},
 			labelsDevice,
 		),
@@ -131,7 +121,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_received_packets",
-				Help:      "Number of packets received wirelessly by devices, partitioned by site and device",
+				Help:      "Number of packets received wirelessly by devices",
 			},
 			labelsDevice,
 		),
@@ -141,7 +131,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_transmitted_packets",
-				Help:      "Number of packets transmitted wirelessly by devices, partitioned by site and device",
+				Help:      "Number of packets transmitted wirelessly by devices",
 			},
 			labelsDevice,
 		),
@@ -151,7 +141,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wireless_transmitted_dropped",
-				Help:      "Number of packets which are dropped on wireless transmission by devices, partitioned by site and device",
+				Help:      "Number of packets which are dropped on wireless transmission by devices",
 			},
 			labelsDevice,
 		),
@@ -161,7 +151,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_received_bytes",
-				Help:      "Number of bytes received using wired interface by devices, partitioned by site and device",
+				Help:      "Number of bytes received using wired interface by devices",
 			},
 			labelsDevice,
 		),
@@ -171,7 +161,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_transmitted_bytes",
-				Help:      "Number of bytes transmitted using wired interface by devices, partitioned by site and device",
+				Help:      "Number of bytes transmitted using wired interface by devices",
 			},
 			labelsDevice,
 		),
@@ -181,7 +171,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_received_packets",
-				Help:      "Number of packets received using wired interface by devices, partitioned by site and device",
+				Help:      "Number of packets received using wired interface by devices",
 			},
 			labelsDevice,
 		),
@@ -191,7 +181,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "wired_transmitted_packets",
-				Help:      "Number of packets transmitted using wired interface by devices, partitioned by site and device",
+				Help:      "Number of packets transmitted using wired interface by devices",
 			},
 			labelsDevice,
 		),
@@ -201,7 +191,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "stations_total",
-				Help:      "Total number of stations (clients) connected to devices, partitioned by site, device, and wireless radio",
+				Help:      "Total number of stations (clients) connected to devices",
 			},
 			labelsDeviceStations,
 		),
@@ -211,7 +201,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "stations_user",
-				Help:      "Number of user stations (private clients) connected to devices, partitioned by site, device, and wireless radio",
+				Help:      "Number of user stations (private clients) connected to devices",
 			},
 			labelsDeviceStations,
 		),
@@ -221,7 +211,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 				Namespace: namespace,
 				Subsystem: subsystem,
 				Name:      "stations_guest",
-				Help:      "Number of guest stations (public clients) connected to devices, partitioned by site, device, and wireless radio",
+				Help:      "Number of guest stations (public clients) connected to devices",
 			},
 			labelsDeviceStations,
 		),
@@ -242,7 +232,6 @@ func (c *DeviceCollector) collectors() []prometheus.Collector {
 
 		c.UptimeSeconds,
 
-		c.WirelessTotalBytes,
 		c.WirelessReceivedBytes,
 		c.WirelessTransmittedBytes,
 
@@ -322,7 +311,6 @@ func (c *DeviceCollector) collectDeviceBytes(siteLabel string, devices []*unifi.
 			d.Name,
 		}
 
-		c.WirelessTotalBytes.WithLabelValues(labels...).Set(float64(d.Stats.TotalBytes))
 		c.WirelessReceivedBytes.WithLabelValues(labels...).Set(float64(d.Stats.All.ReceiveBytes))
 		c.WirelessTransmittedBytes.WithLabelValues(labels...).Set(float64(d.Stats.All.TransmitBytes))
 
