@@ -73,7 +73,7 @@ func TestDeviceCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_devices_wireless_received_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
-				regexp.MustCompile(`unifi_devices_wireless_transmitted_dropped{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
+				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets_dropped{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
 
 				regexp.MustCompile(`unifi_devices_wired_received_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 20`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 10`),
@@ -81,8 +81,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_wired_received_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 2`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
 
-				regexp.MustCompile(`unifi_devices_stations_total{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 3`),
-				regexp.MustCompile(`unifi_devices_stations_total{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="Default"} 6`),
+				regexp.MustCompile(`unifi_devices_stations{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 3`),
+				regexp.MustCompile(`unifi_devices_stations{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="Default"} 6`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 2`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_stations_guest{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 1`),
@@ -189,7 +189,7 @@ func TestDeviceCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_devices_wireless_received_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
-				regexp.MustCompile(`unifi_devices_wireless_transmitted_dropped{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
+				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets_dropped{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
 
 				regexp.MustCompile(`unifi_devices_wired_received_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 20`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_bytes{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 10`),
@@ -197,8 +197,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_wired_received_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 2`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_packets{id="abc",mac="de:ad:be:ef:de:ad",name="ABC",site="Default"} 1`),
 
-				regexp.MustCompile(`unifi_devices_stations_total{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 3`),
-				regexp.MustCompile(`unifi_devices_stations_total{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="Default"} 6`),
+				regexp.MustCompile(`unifi_devices_stations{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 3`),
+				regexp.MustCompile(`unifi_devices_stations{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="Default"} 6`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 2`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="abc",interface="wifi1",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11ac",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_stations_guest{id="abc",interface="wifi0",mac="de:ad:be:ef:de:ad",name="ABC",radio="802.11n",site="Default"} 1`),
@@ -211,7 +211,7 @@ func TestDeviceCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_devices_wireless_received_packets{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 1`),
 				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 19`),
-				regexp.MustCompile(`unifi_devices_wireless_transmitted_dropped{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 1`),
+				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets_dropped{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 1`),
 
 				regexp.MustCompile(`unifi_devices_wired_received_bytes{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 40`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_bytes{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 20`),
@@ -219,8 +219,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_wired_received_packets{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_packets{id="def",mac="ab:ad:1d:ea:ab:ad",name="DEF",site="Default"} 2`),
 
-				regexp.MustCompile(`unifi_devices_stations_total{id="def",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="DEF",radio="802.11n",site="Default"} 3`),
-				regexp.MustCompile(`unifi_devices_stations_total{id="def",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="DEF",radio="802.11ac",site="Default"} 6`),
+				regexp.MustCompile(`unifi_devices_stations{id="def",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="DEF",radio="802.11n",site="Default"} 3`),
+				regexp.MustCompile(`unifi_devices_stations{id="def",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="DEF",radio="802.11ac",site="Default"} 6`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="def",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="DEF",radio="802.11n",site="Default"} 2`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="def",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="DEF",radio="802.11ac",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_stations_guest{id="def",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="DEF",radio="802.11n",site="Default"} 1`),
@@ -289,7 +289,7 @@ func TestDeviceCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_devices_wireless_received_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 1`),
-				regexp.MustCompile(`unifi_devices_wireless_transmitted_dropped{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 1`),
+				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets_dropped{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 1`),
 
 				regexp.MustCompile(`unifi_devices_wired_received_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 20`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 10`),
@@ -297,8 +297,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_wired_received_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 2`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Default"} 1`),
 
-				regexp.MustCompile(`unifi_devices_stations_total{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Default"} 3`),
-				regexp.MustCompile(`unifi_devices_stations_total{id="123",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11ac",site="Default"} 6`),
+				regexp.MustCompile(`unifi_devices_stations{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Default"} 3`),
+				regexp.MustCompile(`unifi_devices_stations{id="123",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11ac",site="Default"} 6`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Default"} 2`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="123",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11ac",site="Default"} 4`),
 				regexp.MustCompile(`unifi_devices_stations_guest{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Default"} 1`),
@@ -315,7 +315,7 @@ func TestDeviceCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_devices_wireless_received_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 4`),
 				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 1`),
-				regexp.MustCompile(`unifi_devices_wireless_transmitted_dropped{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 1`),
+				regexp.MustCompile(`unifi_devices_wireless_transmitted_packets_dropped{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 1`),
 
 				regexp.MustCompile(`unifi_devices_wired_received_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 20`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_bytes{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 10`),
@@ -323,8 +323,8 @@ func TestDeviceCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_devices_wired_received_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 2`),
 				regexp.MustCompile(`unifi_devices_wired_transmitted_packets{id="123",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",site="Some Site"} 1`),
 
-				regexp.MustCompile(`unifi_devices_stations_total{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Some Site"} 3`),
-				regexp.MustCompile(`unifi_devices_stations_total{id="123",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11ac",site="Some Site"} 6`),
+				regexp.MustCompile(`unifi_devices_stations{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Some Site"} 3`),
+				regexp.MustCompile(`unifi_devices_stations{id="123",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11ac",site="Some Site"} 6`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Some Site"} 2`),
 				regexp.MustCompile(`unifi_devices_stations_user{id="123",interface="wifi1",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11ac",site="Some Site"} 4`),
 				regexp.MustCompile(`unifi_devices_stations_guest{id="123",interface="wifi0",mac="ab:ad:1d:ea:ab:ad",name="OneTwoThree",radio="802.11n",site="Some Site"} 1`),
