@@ -11,26 +11,26 @@ import (
 // A DeviceCollector is a Prometheus collector for metrics regarding Ubiquiti
 // UniFi devices.
 type DeviceCollector struct {
-	TotalDevices     *prometheus.Desc
+	Devices          *prometheus.Desc
 	AdoptedDevices   *prometheus.Desc
 	UnadoptedDevices *prometheus.Desc
 
-	UptimeSeconds *prometheus.Desc
+	UptimeSecondsTotal *prometheus.Desc
 
-	WirelessReceivedBytes    *prometheus.Desc
-	WirelessTransmittedBytes *prometheus.Desc
+	WirelessReceivedBytesTotal    *prometheus.Desc
+	WirelessTransmittedBytesTotal *prometheus.Desc
 
-	WirelessReceivedPackets    *prometheus.Desc
-	WirelessTransmittedPackets *prometheus.Desc
-	WirelessTransmittedDropped *prometheus.Desc
+	WirelessReceivedPacketsTotal    *prometheus.Desc
+	WirelessTransmittedPacketsTotal *prometheus.Desc
+	WirelessTransmittedDroppedTotal *prometheus.Desc
 
-	WiredReceivedBytes    *prometheus.Desc
-	WiredTransmittedBytes *prometheus.Desc
+	WiredReceivedBytesTotal    *prometheus.Desc
+	WiredTransmittedBytesTotal *prometheus.Desc
 
-	WiredReceivedPackets    *prometheus.Desc
-	WiredTransmittedPackets *prometheus.Desc
+	WiredReceivedPacketsTotal    *prometheus.Desc
+	WiredTransmittedPacketsTotal *prometheus.Desc
 
-	TotalStations *prometheus.Desc
+	Stations      *prometheus.Desc
 	UserStations  *prometheus.Desc
 	GuestStations *prometheus.Desc
 
@@ -55,7 +55,7 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 	)
 
 	return &DeviceCollector{
-		TotalDevices: prometheus.NewDesc(
+		Devices: prometheus.NewDesc(
 			// Subsystem is used as name so we get "unifi_devices"
 			prometheus.BuildFQName(namespace, "", subsystem),
 			"Total number of devices",
@@ -77,77 +77,77 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 			nil,
 		),
 
-		UptimeSeconds: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "uptime_seconds"),
+		UptimeSecondsTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "uptime_seconds_total"),
 			"Device uptime in seconds",
 			labelsDevice,
 			nil,
 		),
 
-		WirelessReceivedBytes: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wireless_received_bytes"),
+		WirelessReceivedBytesTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wireless_received_bytes_total"),
 			"Number of bytes received wirelessly by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WirelessTransmittedBytes: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wireless_transmitted_bytes"),
+		WirelessTransmittedBytesTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wireless_transmitted_bytes_total"),
 			"Number of bytes transmitted wirelessly by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WirelessReceivedPackets: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wireless_received_packets"),
+		WirelessReceivedPacketsTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wireless_received_packets_total"),
 			"Number of packets received wirelessly by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WirelessTransmittedPackets: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wireless_transmitted_packets"),
+		WirelessTransmittedPacketsTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wireless_transmitted_packets_total"),
 			"Number of packets transmitted wirelessly by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WirelessTransmittedDropped: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wireless_transmitted_packets_dropped"),
+		WirelessTransmittedDroppedTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wireless_transmitted_packets_dropped_total"),
 			"Number of packets which are dropped on wireless transmission by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WiredReceivedBytes: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wired_received_bytes"),
+		WiredReceivedBytesTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wired_received_bytes_total"),
 			"Number of bytes received using wired interface by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WiredTransmittedBytes: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wired_transmitted_bytes"),
+		WiredTransmittedBytesTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wired_transmitted_bytes_total"),
 			"Number of bytes transmitted using wired interface by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WiredReceivedPackets: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wired_received_packets"),
+		WiredReceivedPacketsTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wired_received_packets_total"),
 			"Number of packets received using wired interface by devices",
 			labelsDevice,
 			nil,
 		),
 
-		WiredTransmittedPackets: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, subsystem, "wired_transmitted_packets"),
+		WiredTransmittedPacketsTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "wired_transmitted_packets_total"),
 			"Number of packets transmitted using wired interface by devices",
 			labelsDevice,
 			nil,
 		),
 
-		TotalStations: prometheus.NewDesc(
+		Stations: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "stations"),
 			"Total number of stations (clients) connected to devices",
 			labelsDeviceStations,
@@ -175,15 +175,15 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 
 // collect begins a metrics collection task for all metrics related to UniFi
 // devices.
-func (c *DeviceCollector) collect(ch chan<- prometheus.Metric) error {
+func (c *DeviceCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, error) {
 	for _, s := range c.sites {
 		devices, err := c.c.Devices(s.Name)
 		if err != nil {
-			return err
+			return c.Devices, err
 		}
 
 		ch <- prometheus.MustNewConstMetric(
-			c.TotalDevices,
+			c.Devices,
 			prometheus.GaugeValue,
 			float64(len(devices)),
 			s.Description,
@@ -195,7 +195,7 @@ func (c *DeviceCollector) collect(ch chan<- prometheus.Metric) error {
 		c.collectDeviceStations(ch, s.Description, devices)
 	}
 
-	return nil
+	return nil, nil
 }
 
 // collectDeviceAdoptions collects counts for number of adopted and unadopted
@@ -237,8 +237,8 @@ func (c *DeviceCollector) collectDeviceUptime(ch chan<- prometheus.Metric, siteL
 		}
 
 		ch <- prometheus.MustNewConstMetric(
-			c.UptimeSeconds,
-			prometheus.GaugeValue,
+			c.UptimeSecondsTotal,
+			prometheus.CounterValue,
 			float64(d.Uptime/time.Second),
 			labels...,
 		)
@@ -256,59 +256,59 @@ func (c *DeviceCollector) collectDeviceBytes(ch chan<- prometheus.Metric, siteLa
 		}
 
 		ch <- prometheus.MustNewConstMetric(
-			c.WirelessReceivedBytes,
-			prometheus.GaugeValue,
+			c.WirelessReceivedBytesTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.All.ReceiveBytes),
 			labels...,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			c.WirelessTransmittedBytes,
-			prometheus.GaugeValue,
+			c.WirelessTransmittedBytesTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.All.TransmitBytes),
 			labels...,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			c.WirelessReceivedPackets,
-			prometheus.GaugeValue,
+			c.WirelessReceivedPacketsTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.All.ReceivePackets),
 			labels...,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			c.WirelessTransmittedPackets,
-			prometheus.GaugeValue,
+			c.WirelessTransmittedPacketsTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.All.TransmitPackets),
 			labels...,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			c.WirelessTransmittedDropped,
-			prometheus.GaugeValue,
+			c.WirelessTransmittedDroppedTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.All.TransmitDropped),
 			labels...,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			c.WiredReceivedBytes,
-			prometheus.GaugeValue,
+			c.WiredReceivedBytesTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.Uplink.ReceiveBytes),
 			labels...,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			c.WiredTransmittedBytes,
-			prometheus.GaugeValue,
+			c.WiredTransmittedBytesTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.Uplink.TransmitBytes),
 			labels...,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			c.WiredReceivedPackets,
-			prometheus.GaugeValue,
+			c.WiredReceivedPacketsTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.Uplink.ReceivePackets),
 			labels...,
 		)
 		ch <- prometheus.MustNewConstMetric(
-			c.WiredTransmittedPackets,
-			prometheus.GaugeValue,
+			c.WiredTransmittedPacketsTotal,
+			prometheus.CounterValue,
 			float64(d.Stats.Uplink.TransmitPackets),
 			labels...,
 		)
@@ -334,7 +334,7 @@ func (c *DeviceCollector) collectDeviceStations(ch chan<- prometheus.Metric, sit
 			llabels = append(llabels, r.Name, r.Radio)
 
 			ch <- prometheus.MustNewConstMetric(
-				c.TotalStations,
+				c.Stations,
 				prometheus.GaugeValue,
 				float64(r.Stats.NumberStations),
 				llabels...,
@@ -359,26 +359,26 @@ func (c *DeviceCollector) collectDeviceStations(ch chan<- prometheus.Metric, sit
 // The corresponding metric values are sent separately.
 func (c *DeviceCollector) Describe(ch chan<- *prometheus.Desc) {
 	ds := []*prometheus.Desc{
-		c.TotalDevices,
+		c.Devices,
 		c.AdoptedDevices,
 		c.UnadoptedDevices,
 
-		c.UptimeSeconds,
+		c.UptimeSecondsTotal,
 
-		c.WirelessReceivedBytes,
-		c.WirelessTransmittedBytes,
+		c.WirelessReceivedBytesTotal,
+		c.WirelessTransmittedBytesTotal,
 
-		c.WirelessReceivedPackets,
-		c.WirelessTransmittedPackets,
-		c.WirelessTransmittedDropped,
+		c.WirelessReceivedPacketsTotal,
+		c.WirelessTransmittedPacketsTotal,
+		c.WirelessTransmittedDroppedTotal,
 
-		c.WiredReceivedBytes,
-		c.WiredTransmittedBytes,
+		c.WiredReceivedBytesTotal,
+		c.WiredTransmittedBytesTotal,
 
-		c.WiredReceivedPackets,
-		c.WiredTransmittedPackets,
+		c.WiredReceivedPacketsTotal,
+		c.WiredTransmittedPacketsTotal,
 
-		c.TotalStations,
+		c.Stations,
 		c.UserStations,
 		c.GuestStations,
 	}
@@ -391,8 +391,9 @@ func (c *DeviceCollector) Describe(ch chan<- *prometheus.Desc) {
 // Collect sends the metric values for each metric pertaining to the global
 // cluster usage over to the provided prometheus Metric channel.
 func (c *DeviceCollector) Collect(ch chan<- prometheus.Metric) {
-	if err := c.collect(ch); err != nil {
-		log.Println("[ERROR] failed collecting device metrics:", err)
+	if desc, err := c.collect(ch); err != nil {
+		log.Printf("[ERROR] failed collecting device metric %v: %v", desc, err)
+		ch <- prometheus.NewInvalidMetric(desc, err)
 		return
 	}
 }
