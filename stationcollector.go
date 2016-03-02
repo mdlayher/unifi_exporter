@@ -10,13 +10,13 @@ import (
 // A StationCollector is a Prometheus collector for metrics regarding Ubiquiti
 // UniFi stations (clients).
 type StationCollector struct {
-	TotalStations *prometheus.GaugeVec
+	Stations *prometheus.Desc
 
-	ReceivedBytes    *prometheus.GaugeVec
-	TransmittedBytes *prometheus.GaugeVec
+	ReceivedBytesTotal    *prometheus.Desc
+	TransmittedBytesTotal *prometheus.Desc
 
-	ReceivedPackets    *prometheus.GaugeVec
-	TransmittedPackets *prometheus.GaugeVec
+	ReceivedPacketsTotal    *prometheus.Desc
+	TransmittedPacketsTotal *prometheus.Desc
 
 	c     *unifi.Client
 	sites []*unifi.Site
@@ -38,54 +38,40 @@ func NewStationCollector(c *unifi.Client, sites []*unifi.Site) *StationCollector
 	)
 
 	return &StationCollector{
-		TotalStations: prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Namespace: namespace,
-				Subsystem: subsystem,
-				Name:      "total",
-				Help:      "Total number of stations (clients), partitioned by site",
-			},
+		Stations: prometheus.NewDesc(
+			// Subsystem is used as name so we get "unifi_stations"
+			prometheus.BuildFQName(namespace, "", subsystem),
+			"Total number of stations (clients)",
 			labelsSiteOnly,
+			nil,
 		),
 
-		ReceivedBytes: prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Namespace: namespace,
-				Subsystem: subsystem,
-				Name:      "received_bytes",
-				Help:      "Number of bytes received by stations (client download), partitioned by site, station, and access point",
-			},
+		ReceivedBytesTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "received_bytes_total"),
+			"Number of bytes received by stations (client download)",
 			labelsStation,
+			nil,
 		),
 
-		TransmittedBytes: prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Namespace: namespace,
-				Subsystem: subsystem,
-				Name:      "transmitted_bytes",
-				Help:      "Number of bytes transmitted by stations (client upload), partitioned by site, station, and access point",
-			},
+		TransmittedBytesTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "transmitted_bytes_total"),
+			"Number of bytes transmitted by stations (client upload)",
 			labelsStation,
+			nil,
 		),
 
-		ReceivedPackets: prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Namespace: namespace,
-				Subsystem: subsystem,
-				Name:      "received_packets",
-				Help:      "Number of packets received by stations (client download), partitioned by site, station, and access point",
-			},
+		ReceivedPacketsTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "received_packets_total"),
+			"Number of packets received by stations (client download)",
 			labelsStation,
+			nil,
 		),
 
-		TransmittedPackets: prometheus.NewGaugeVec(
-			prometheus.GaugeOpts{
-				Namespace: namespace,
-				Subsystem: subsystem,
-				Name:      "transmitted_packets",
-				Help:      "Number of packets transmitted by stations (client upload), partitioned by site, station, and access point",
-			},
+		TransmittedPacketsTotal: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "transmitted_packets_total"),
+			"Number of packets transmitted by stations (client upload)",
 			labelsStation,
+			nil,
 		),
 
 		c:     c,
@@ -93,39 +79,30 @@ func NewStationCollector(c *unifi.Client, sites []*unifi.Site) *StationCollector
 	}
 }
 
-// collectors contains a list of collectors which are collected each time
-// the exporter is scraped.  This list must be kept in sync with the collectors
-// in StationCollector.
-func (c *StationCollector) collectors() []prometheus.Collector {
-	return []prometheus.Collector{
-		c.TotalStations,
-
-		c.ReceivedBytes,
-		c.TransmittedBytes,
-
-		c.ReceivedPackets,
-		c.TransmittedPackets,
-	}
-}
-
 // collect begins a metrics collection task for all metrics related to UniFi
 // stations.
-func (c *StationCollector) collect() error {
+func (c *StationCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc, error) {
 	for _, s := range c.sites {
 		stations, err := c.c.Stations(s.Name)
 		if err != nil {
-			return err
+			return c.Stations, err
 		}
 
-		c.TotalStations.WithLabelValues(s.Description).Set(float64(len(stations)))
-		c.collectStationBytes(s.Description, stations)
+		ch <- prometheus.MustNewConstMetric(
+			c.Stations,
+			prometheus.GaugeValue,
+			float64(len(stations)),
+			s.Description,
+		)
+
+		c.collectStationBytes(ch, s.Description, stations)
 	}
 
-	return nil
+	return nil, nil
 }
 
 // collectStationBytes collects receive and transmit byte counts for UniFi stations.
-func (c *StationCollector) collectStationBytes(siteLabel string, stations []*unifi.Station) {
+func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, siteLabel string, stations []*unifi.Station) {
 	for _, s := range stations {
 		labels := []string{
 			siteLabel,
@@ -135,31 +112,58 @@ func (c *StationCollector) collectStationBytes(siteLabel string, stations []*uni
 			s.Hostname,
 		}
 
-		c.ReceivedBytes.WithLabelValues(labels...).Set(float64(s.Stats.ReceiveBytes))
-		c.TransmittedBytes.WithLabelValues(labels...).Set(float64(s.Stats.TransmitBytes))
+		ch <- prometheus.MustNewConstMetric(
+			c.ReceivedBytesTotal,
+			prometheus.CounterValue,
+			float64(s.Stats.ReceiveBytes),
+			labels...,
+		)
+		ch <- prometheus.MustNewConstMetric(
+			c.TransmittedBytesTotal,
+			prometheus.CounterValue,
+			float64(s.Stats.TransmitBytes),
+			labels...,
+		)
 
-		c.ReceivedPackets.WithLabelValues(labels...).Set(float64(s.Stats.ReceivePackets))
-		c.TransmittedPackets.WithLabelValues(labels...).Set(float64(s.Stats.TransmitPackets))
+		ch <- prometheus.MustNewConstMetric(
+			c.ReceivedPacketsTotal,
+			prometheus.CounterValue,
+			float64(s.Stats.ReceivePackets),
+			labels...,
+		)
+		ch <- prometheus.MustNewConstMetric(
+			c.TransmittedPacketsTotal,
+			prometheus.CounterValue,
+			float64(s.Stats.TransmitPackets),
+			labels...,
+		)
 	}
 }
 
 // Describe sends the descriptors of each metric over to the provided channel.
 // The corresponding metric values are sent separately.
 func (c *StationCollector) Describe(ch chan<- *prometheus.Desc) {
-	for _, m := range c.collectors() {
-		m.Describe(ch)
+	ds := []*prometheus.Desc{
+		c.Stations,
+
+		c.ReceivedBytesTotal,
+		c.TransmittedBytesTotal,
+
+		c.ReceivedPacketsTotal,
+		c.TransmittedPacketsTotal,
+	}
+
+	for _, d := range ds {
+		ch <- d
 	}
 }
 
 // Collect sends the metric values for each metric pertaining to the global
 // cluster usage over to the provided prometheus Metric channel.
 func (c *StationCollector) Collect(ch chan<- prometheus.Metric) {
-	if err := c.collect(); err != nil {
-		log.Fatalf("[ERROR] failed collecting station metrics: %v", err)
+	if desc, err := c.collect(ch); err != nil {
+		log.Printf("[ERROR] failed collecting station metric %v: %v", desc, err)
+		ch <- prometheus.NewInvalidMetric(desc, err)
 		return
-	}
-
-	for _, m := range c.collectors() {
-		m.Collect(ch)
 	}
 }
