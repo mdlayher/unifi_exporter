@@ -1,0 +1,6 @@
+unifiexporter:
+  image: mdlayher/unifi_exporter
+  restart: 'always'
+  ports:
+    - '9130:9130'
+  command: "-unifi.addr https://unifi.example.com:8443/ -unifi.username admin -unifi.password password"
