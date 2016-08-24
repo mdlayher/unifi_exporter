@@ -2,11 +2,14 @@ package unifiexporter
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/mdlayher/unifi"
 	"github.com/prometheus/client_golang/prometheus"
 )
+
+const allowedFailures = 10
 
 // A DeviceCollector is a Prometheus collector for metrics regarding Ubiquiti
 // UniFi devices.
@@ -36,6 +39,8 @@ type DeviceCollector struct {
 
 	c     *unifi.Client
 	sites []*unifi.Site
+
+	fails int
 }
 
 // Verify that the Exporter implements the prometheus.Collector interface.
@@ -393,7 +398,13 @@ func (c *DeviceCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *DeviceCollector) Collect(ch chan<- prometheus.Metric) {
 	if desc, err := c.collect(ch); err != nil {
 		log.Printf("[ERROR] failed collecting device metric %v: %v", desc, err)
+		c.fails = c.fails + 1
 		ch <- prometheus.NewInvalidMetric(desc, err)
+
+		if c.fails > allowedFailures {
+			os.Exit(3)
+		}
+
 		return
 	}
 }
