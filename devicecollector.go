@@ -38,8 +38,8 @@ type DeviceCollector struct {
 	sites []*unifi.Site
 }
 
-// Verify that the Exporter implements the prometheus.Collector interface.
-var _ prometheus.Collector = &DeviceCollector{}
+// Verify that the Exporter implements the collector interface.
+var _ collector = &DeviceCollector{}
 
 // NewDeviceCollector creates a new DeviceCollector which collects metrics for
 // a specified site.
@@ -388,12 +388,21 @@ func (c *DeviceCollector) Describe(ch chan<- *prometheus.Desc) {
 	}
 }
 
-// Collect sends the metric values for each metric pertaining to the global
-// cluster usage over to the provided prometheus Metric channel.
+// Collect is the same as CollectError, but ignores any errors which occur.
+// Collect exists to satisfy the prometheus.Collector interface.
 func (c *DeviceCollector) Collect(ch chan<- prometheus.Metric) {
+	_ = c.CollectError(ch)
+}
+
+// CollectError sends the metric values for each metric pertaining to the global
+// cluster usage over to the provided prometheus Metric channel, returning any
+// errors which occur.
+func (c *DeviceCollector) CollectError(ch chan<- prometheus.Metric) error {
 	if desc, err := c.collect(ch); err != nil {
-		log.Printf("[ERROR] failed collecting device metric %v: %v", desc, err)
 		ch <- prometheus.NewInvalidMetric(desc, err)
-		return
+		log.Printf("[ERROR] failed collecting device metric %v: %v", desc, err)
+		return err
 	}
+
+	return nil
 }

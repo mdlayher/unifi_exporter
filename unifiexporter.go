@@ -3,6 +3,7 @@
 package unifiexporter
 
 import (
+	"log"
 	"sync"
 
 	"github.com/mdlayher/unifi"
@@ -22,26 +23,48 @@ const (
 // register with Prometheus.
 type Exporter struct {
 	mu         sync.Mutex
-	collectors []prometheus.Collector
+	collectors []collector
+	sites      []*unifi.Site
+	clientFn   ClientFunc
 }
 
 // Verify that the Exporter implements the prometheus.Collector interface.
 var _ prometheus.Collector = &Exporter{}
 
+// collector is essentially a modified prometheus.Collector which can return
+// errors used to reconfigure the application.
+type collector interface {
+	prometheus.Collector
+	CollectError(chan<- prometheus.Metric) error
+}
+
+// A ClientFunc is a function which can return an authenticated UniFi client.
+// A ClientFunc is invoked by an Exporter whenever authentication against a UniFi
+// controller fails, such as when a user's privileges are revoked or the
+// authenticated session times out.
+type ClientFunc func() (*unifi.Client, error)
+
 // New creates a new Exporter which collects metrics from one or mote sites.
-func New(c *unifi.Client, sites []*unifi.Site) *Exporter {
-	return &Exporter{
-		collectors: []prometheus.Collector{
-			NewDeviceCollector(c, sites),
-			NewStationCollector(c, sites),
-		},
+func New(sites []*unifi.Site, fn ClientFunc) (*Exporter, error) {
+	e := &Exporter{
+		clientFn: fn,
+		sites:    sites,
 	}
+
+	if err := e.initClient(); err != nil {
+		return nil, err
+	}
+
+	return e, nil
 }
 
 // Describe sends all the descriptors of the collectors included to
 // the provided channel.
-func (c *Exporter) Describe(ch chan<- *prometheus.Desc) {
-	for _, cc := range c.collectors {
+func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	for _, cc := range e.collectors {
 		cc.Describe(ch)
 	}
 }
@@ -49,11 +72,37 @@ func (c *Exporter) Describe(ch chan<- *prometheus.Desc) {
 // Collect sends the collected metrics from each of the collectors to
 // prometheus. Collect could be called several times concurrently
 // and thus its run is protected by a single mutex.
-func (c *Exporter) Collect(ch chan<- prometheus.Metric) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
+func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
 
-	for _, cc := range c.collectors {
-		cc.Collect(ch)
+	for _, cc := range e.collectors {
+		if err := cc.CollectError(ch); err == nil {
+			continue
+		}
+
+		if err := e.initClient(); err != nil {
+			log.Printf("[ERROR] could not initialize UniFi client: %v", err)
+			return
+		}
 	}
+}
+
+// initClient sets up collectors for the Exporter, authenticating against
+// the UniFi controller with a fresh session before doing so.
+//
+// initClient must be called with e's mutex locked.
+func (e *Exporter) initClient() error {
+	c, err := e.clientFn()
+	if err != nil {
+		return err
+	}
+
+	e.collectors = []collector{
+		NewDeviceCollector(c, e.sites),
+		NewStationCollector(c, e.sites),
+	}
+
+	log.Println("[INFO] successfully authenticated to UniFi controller")
+	return nil
 }
