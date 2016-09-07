@@ -23,7 +23,7 @@ type StationCollector struct {
 }
 
 // Verify that the Exporter implements the prometheus.Collector interface.
-var _ prometheus.Collector = &StationCollector{}
+var _ collector = &StationCollector{}
 
 // NewStationCollector creates a new StationCollector which collects metrics for
 // a specified site.
@@ -158,12 +158,21 @@ func (c *StationCollector) Describe(ch chan<- *prometheus.Desc) {
 	}
 }
 
-// Collect sends the metric values for each metric pertaining to the global
-// cluster usage over to the provided prometheus Metric channel.
+// Collect is the same as Collect, but ignores any errors which occur.
+// Collect exists to satisfy the prometheus.Collector interface.
 func (c *StationCollector) Collect(ch chan<- prometheus.Metric) {
+	_ = c.CollectError(ch)
+}
+
+// CollectError sends the metric values for each metric pertaining to the global
+// cluster usage over to the provided prometheus Metric channel, returning any
+// errors which occur.
+func (c *StationCollector) CollectError(ch chan<- prometheus.Metric) error {
 	if desc, err := c.collect(ch); err != nil {
 		log.Printf("[ERROR] failed collecting station metric %v: %v", desc, err)
 		ch <- prometheus.NewInvalidMetric(desc, err)
-		return
+		return err
 	}
+
+	return nil
 }

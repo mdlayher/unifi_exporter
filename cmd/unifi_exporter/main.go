@@ -46,19 +46,16 @@ func main() {
 		log.Fatal("password to authenticate to UniFi Controller API must be specified with '-unifi.password' flag")
 	}
 
-	httpClient := &http.Client{Timeout: *timeout}
-	if *insecure {
-		httpClient = unifi.InsecureHTTPClient(*timeout)
-	}
-
-	c, err := unifi.NewClient(*unifiAddr, httpClient)
+	clientFn := newClient(
+		*unifiAddr,
+		*username,
+		*password,
+		*insecure,
+		*timeout,
+	)
+	c, err := clientFn()
 	if err != nil {
-		log.Fatalf("cannot create UniFi Controller client: %v", err)
-	}
-	c.UserAgent = userAgent
-
-	if err := c.Login(*username, *password); err != nil {
-		log.Fatalf("failed to authenticate to UniFi Controller: %v", err)
+		log.Fatalf("failed to create client: %v", err)
 	}
 
 	sites, err := c.Sites()
@@ -71,7 +68,12 @@ func main() {
 		log.Fatalf("failed to select a site: %v", err)
 	}
 
-	prometheus.MustRegister(unifiexporter.New(c, useSites))
+	e, err := unifiexporter.New(useSites, clientFn)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+
+	prometheus.MustRegister(e)
 
 	http.Handle(*metricsPath, prometheus.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -115,4 +117,26 @@ func sitesString(sites []*unifi.Site) string {
 	}
 
 	return strings.Join(ds, ", ")
+}
+
+// newClient returns a unifiexporter.ClientFunc using the input parameters.
+func newClient(addr, username, password string, insecure bool, timeout time.Duration) unifiexporter.ClientFunc {
+	return func() (*unifi.Client, error) {
+		httpClient := &http.Client{Timeout: timeout}
+		if insecure {
+			httpClient = unifi.InsecureHTTPClient(timeout)
+		}
+
+		c, err := unifi.NewClient(addr, httpClient)
+		if err != nil {
+			return nil, fmt.Errorf("cannot create UniFi Controller client: %v", err)
+		}
+		c.UserAgent = userAgent
+
+		if err := c.Login(username, password); err != nil {
+			return nil, fmt.Errorf("failed to authenticate to UniFi Controller: %v", err)
+		}
+
+		return c, nil
+	}
 }
