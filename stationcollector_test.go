@@ -25,6 +25,8 @@ func TestStationCollector(t *testing.T) {
 			"ap_mac": "a0:a0:a0:a0:a0:a0",
 			"mac": "de:ad:be:ef:de:ad",
 			"hostname": "foo",
+			"noise": -110,
+			"rssi": 40,
 			"rx_bytes": 10,
 			"rx_packets": 1,
 			"tx_bytes": 20,
@@ -41,6 +43,9 @@ func TestStationCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
 				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
+
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
@@ -57,6 +62,8 @@ func TestStationCollector(t *testing.T) {
 			"ap_mac": "a0:a0:a0:a0:a0:a0",
 			"mac": "de:ad:be:ef:de:ad",
 			"hostname": "foo",
+			"noise": -110,
+			"rssi": 40,
 			"rx_bytes": 10,
 			"rx_packets": 1,
 			"tx_bytes": 20,
@@ -67,6 +74,8 @@ func TestStationCollector(t *testing.T) {
 			"ap_mac": "a0:a0:a0:a0:a0:a0",
 			"mac": "ab:ad:1d:ea:ab:ad",
 			"hostname": "bar",
+			"noise": -110,
+			"rssi": 50,
 			"rx_bytes": 100,
 			"rx_packets": 10,
 			"tx_bytes": 200,
@@ -84,11 +93,17 @@ func TestStationCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
 				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
 
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
+
 				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 100`),
 				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 200`),
 
 				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 10`),
 				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 20`),
+
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 50`),
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
@@ -105,6 +120,8 @@ func TestStationCollector(t *testing.T) {
 			"ap_mac": "a0:a0:a0:a0:a0:a0",
 			"mac": "de:ad:be:ef:de:ad",
 			"hostname": "foo",
+			"noise": -110,
+			"rssi": 40,
 			"rx_bytes": 10,
 			"rx_packets": 1,
 			"tx_bytes": 20,
@@ -122,6 +139,9 @@ func TestStationCollector(t *testing.T) {
 				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
 				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
 
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
+
 				regexp.MustCompile(`unifi_stations{site="Some Site"} 1`),
 
 				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 10`),
@@ -129,6 +149,9 @@ func TestStationCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 1`),
 				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 2`),
+
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 40`),
 			},
 			sites: []*unifi.Site{
 				{

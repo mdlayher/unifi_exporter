@@ -18,6 +18,9 @@ type StationCollector struct {
 	ReceivedPacketsTotal    *prometheus.Desc
 	TransmittedPacketsTotal *prometheus.Desc
 
+	RSSIDBM  *prometheus.Desc
+	NoiseDBM *prometheus.Desc
+
 	c     *unifi.Client
 	sites []*unifi.Site
 }
@@ -74,6 +77,20 @@ func NewStationCollector(c *unifi.Client, sites []*unifi.Site) *StationCollector
 			nil,
 		),
 
+		RSSIDBM: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "rssi_dbm"),
+			"Current signal strength of stations",
+			labelsStation,
+			nil,
+		),
+
+		NoiseDBM: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "noise_dbm"),
+			"Current noise floor of stations",
+			labelsStation,
+			nil,
+		),
+
 		c:     c,
 		sites: sites,
 	}
@@ -96,6 +113,7 @@ func (c *StationCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Des
 		)
 
 		c.collectStationBytes(ch, s.Description, stations)
+		c.collectStationSignal(ch, s.Description, stations)
 	}
 
 	return nil, nil
@@ -140,6 +158,33 @@ func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, site
 	}
 }
 
+// collectStationSignal collects wireless signal strength for UniFi stations.
+func (c *StationCollector) collectStationSignal(ch chan<- prometheus.Metric, siteLabel string, stations []*unifi.Station) {
+	for _, s := range stations {
+		labels := []string{
+			siteLabel,
+			s.ID,
+			s.APMAC.String(),
+			s.MAC.String(),
+			s.Hostname,
+		}
+
+		ch <- prometheus.MustNewConstMetric(
+			c.RSSIDBM,
+			prometheus.GaugeValue,
+			float64(s.RSSI),
+			labels...,
+		)
+
+		ch <- prometheus.MustNewConstMetric(
+			c.NoiseDBM,
+			prometheus.GaugeValue,
+			float64(s.Noise),
+			labels...,
+		)
+	}
+}
+
 // Describe sends the descriptors of each metric over to the provided channel.
 // The corresponding metric values are sent separately.
 func (c *StationCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -151,6 +196,9 @@ func (c *StationCollector) Describe(ch chan<- *prometheus.Desc) {
 
 		c.ReceivedPacketsTotal,
 		c.TransmittedPacketsTotal,
+
+		c.RSSIDBM,
+		c.NoiseDBM,
 	}
 
 	for _, d := range ds {
