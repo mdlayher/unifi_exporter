@@ -119,6 +119,16 @@ func (c *StationCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Des
 	return nil, nil
 }
 
+// hostName picks the more desirable of the two names available. It uses the Unifi-set name if provided,
+// otherwise uses the host-provided name.
+func hostName(s *unifi.Station) string {
+	if s.Name != "" {
+		return s.Name
+	} else {
+		return s.Hostname
+	}
+}
+
 // collectStationBytes collects receive and transmit byte counts for UniFi stations.
 func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, siteLabel string, stations []*unifi.Station) {
 	for _, s := range stations {
@@ -127,7 +137,7 @@ func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, site
 			s.ID,
 			s.APMAC.String(),
 			s.MAC.String(),
-			s.Hostname,
+			hostName(s),
 		}
 
 		ch <- prometheus.MustNewConstMetric(
@@ -161,12 +171,15 @@ func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, site
 // collectStationSignal collects wireless signal strength for UniFi stations.
 func (c *StationCollector) collectStationSignal(ch chan<- prometheus.Metric, siteLabel string, stations []*unifi.Station) {
 	for _, s := range stations {
+		if s.APMAC.String() == "" {
+			continue
+		}
 		labels := []string{
 			siteLabel,
 			s.ID,
 			s.APMAC.String(),
 			s.MAC.String(),
-			s.Hostname,
+			hostName(s),
 		}
 
 		ch <- prometheus.MustNewConstMetric(
