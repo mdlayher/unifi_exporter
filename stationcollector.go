@@ -37,7 +37,14 @@ func NewStationCollector(c *unifi.Client, sites []*unifi.Site) *StationCollector
 
 	var (
 		labelsSiteOnly = []string{"site"}
-		labelsStation  = []string{"site", "id", "ap_mac", "station_mac", "hostname"}
+		labelsStation  = []string{
+			"site",
+			"id",
+			"ap_mac",
+			"station_mac",
+			"hostname",
+			"connection",
+		}
 	)
 
 	return &StationCollector{
@@ -128,6 +135,16 @@ func hostName(s *unifi.Station) string {
 	return s.Hostname
 }
 
+// connType returns a string indicating if a station is connected using a wired
+// or wireless connection.
+func connType(s *unifi.Station) string {
+	if s.IsWired {
+		return "wired"
+	}
+
+	return "wireless"
+}
+
 // collectStationBytes collects receive and transmit byte counts for UniFi stations.
 func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, siteLabel string, stations []*unifi.Station) {
 	for _, s := range stations {
@@ -137,6 +154,7 @@ func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, site
 			s.APMAC.String(),
 			s.MAC.String(),
 			hostName(s),
+			connType(s),
 		}
 
 		ch <- prometheus.MustNewConstMetric(
@@ -179,6 +197,7 @@ func (c *StationCollector) collectStationSignal(ch chan<- prometheus.Metric, sit
 			s.APMAC.String(),
 			s.MAC.String(),
 			hostName(s),
+			connType(s),
 		}
 
 		ch <- prometheus.MustNewConstMetric(

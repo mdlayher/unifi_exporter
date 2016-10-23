@@ -38,14 +38,14 @@ func TestStationCollector(t *testing.T) {
 			matches: []*regexp.Regexp{
 				regexp.MustCompile(`unifi_stations{site="Default"} 1`),
 
-				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
-				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
+				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
+				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
 
-				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
-				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
+				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
+				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
 
-				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
-				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
@@ -73,11 +73,11 @@ func TestStationCollector(t *testing.T) {
 			matches: []*regexp.Regexp{
 				regexp.MustCompile(`unifi_stations{site="Default"} 1`),
 
-				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
-				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
+				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="",connection="wired",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
+				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="",connection="wired",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
 
-				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
-				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
+				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="",connection="wired",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
+				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="",connection="wired",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
@@ -119,23 +119,23 @@ func TestStationCollector(t *testing.T) {
 			matches: []*regexp.Regexp{
 				regexp.MustCompile(`unifi_stations{site="Default"} 2`),
 
-				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
-				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
+				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
+				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
 
-				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
-				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
+				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
+				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
 
-				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
-				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
 
-				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 100`),
-				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 200`),
+				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 100`),
+				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 200`),
 
-				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 10`),
-				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 20`),
+				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 10`),
+				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 20`),
 
-				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} -110`),
-				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 50`),
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="bar",id="123456",site="Default",station_mac="ab:ad:1d:ea:ab:ad"} 50`),
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
@@ -165,25 +165,25 @@ func TestStationCollector(t *testing.T) {
 			matches: []*regexp.Regexp{
 				regexp.MustCompile(`unifi_stations{site="Default"} 1`),
 
-				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
-				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
+				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
+				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
 
-				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
-				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
+				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
+				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
 
-				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
-				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 40`),
 
 				regexp.MustCompile(`unifi_stations{site="Some Site"} 1`),
 
-				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 10`),
-				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 20`),
+				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 10`),
+				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 20`),
 
-				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 1`),
-				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 2`),
+				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 1`),
+				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 2`),
 
-				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} -110`),
-				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 40`),
+				regexp.MustCompile(`unifi_stations_noise_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} -110`),
+				regexp.MustCompile(`unifi_stations_rssi_dbm{ap_mac="a0:a0:a0:a0:a0:a0",connection="wireless",hostname="foo",id="abcdef",site="Some Site",station_mac="de:ad:be:ef:de:ad"} 40`),
 			},
 			sites: []*unifi.Site{
 				{
