@@ -53,6 +53,37 @@ func TestStationCollector(t *testing.T) {
 			}},
 		},
 		{
+			desc: "one wired station, one site",
+			input: strings.TrimSpace(`
+{
+	"data": [
+		{
+			"_id": "abcdef",
+			"mac": "de:ad:be:ef:de:ad",
+			"hostname": "foo",
+			"rx_bytes": 10,
+			"rx_packets": 1,
+			"tx_bytes": 20,
+			"tx_packets": 2
+		}
+	]
+}
+`),
+			matches: []*regexp.Regexp{
+				regexp.MustCompile(`unifi_stations{site="Default"} 1`),
+
+				regexp.MustCompile(`unifi_stations_received_bytes_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 10`),
+				regexp.MustCompile(`unifi_stations_transmitted_bytes_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 20`),
+
+				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
+				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
+			},
+			sites: []*unifi.Site{{
+				Name:        "default",
+				Description: "Default",
+			}},
+		},
+		{
 			desc: "two stations, one site",
 			input: strings.TrimSpace(`
 {
