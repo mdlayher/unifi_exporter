@@ -124,9 +124,8 @@ func (c *StationCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Des
 func hostName(s *unifi.Station) string {
 	if s.Name != "" {
 		return s.Name
-	} else {
-		return s.Hostname
 	}
+	return s.Hostname
 }
 
 // collectStationBytes collects receive and transmit byte counts for UniFi stations.
