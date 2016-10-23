@@ -59,6 +59,7 @@ func TestStationCollector(t *testing.T) {
 	"data": [
 		{
 			"_id": "abcdef",
+			"is_wired": true,
 			"mac": "de:ad:be:ef:de:ad",
 			"hostname": "foo",
 			"rx_bytes": 10,
