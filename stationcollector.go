@@ -171,7 +171,7 @@ func (c *StationCollector) collectStationBytes(ch chan<- prometheus.Metric, site
 // collectStationSignal collects wireless signal strength for UniFi stations.
 func (c *StationCollector) collectStationSignal(ch chan<- prometheus.Metric, siteLabel string, stations []*unifi.Station) {
 	for _, s := range stations {
-		if s.APMAC.String() == "" {
+		if s.IsWired {
 			continue
 		}
 		labels := []string{

@@ -77,7 +77,6 @@ func TestStationCollector(t *testing.T) {
 
 				regexp.MustCompile(`unifi_stations_received_packets_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 1`),
 				regexp.MustCompile(`unifi_stations_transmitted_packets_total{ap_mac="",hostname="foo",id="abcdef",site="Default",station_mac="de:ad:be:ef:de:ad"} 2`),
-
 			},
 			sites: []*unifi.Site{{
 				Name:        "default",
