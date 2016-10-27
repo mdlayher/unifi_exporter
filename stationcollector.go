@@ -58,28 +58,28 @@ func NewStationCollector(c *unifi.Client, sites []*unifi.Site) *StationCollector
 
 		ReceivedBytesTotal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "received_bytes_total"),
-			"Number of bytes received by stations (client download)",
+			"Number of bytes received by the AP for stations (client upload)",
 			labelsStation,
 			nil,
 		),
 
 		TransmittedBytesTotal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "transmitted_bytes_total"),
-			"Number of bytes transmitted by stations (client upload)",
+			"Number of bytes transmitted by the AP to stations (client download)",
 			labelsStation,
 			nil,
 		),
 
 		ReceivedPacketsTotal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "received_packets_total"),
-			"Number of packets received by stations (client download)",
+			"Number of packets received by the AP for stations (client upload)",
 			labelsStation,
 			nil,
 		),
 
 		TransmittedPacketsTotal: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, subsystem, "transmitted_packets_total"),
-			"Number of packets transmitted by stations (client upload)",
+			"Number of packets transmitted by the AP for stations (client download)",
 			labelsStation,
 			nil,
 		),
