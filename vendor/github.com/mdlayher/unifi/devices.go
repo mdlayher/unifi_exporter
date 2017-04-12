@@ -72,7 +72,7 @@ type NIC struct {
 
 // DeviceStats contains device network activity statistics.
 type DeviceStats struct {
-	TotalBytes int64
+	TotalBytes float64
 	All        *WirelessStats
 	Guest      *WirelessStats
 	User       *WirelessStats
@@ -81,19 +81,19 @@ type DeviceStats struct {
 
 // WirelessStats contains wireless device network activity statistics.
 type WirelessStats struct {
-	ReceiveBytes    int64
-	ReceivePackets  int64
-	TransmitBytes   int64
-	TransmitDropped int64
-	TransmitPackets int64
+	ReceiveBytes    float64
+	ReceivePackets  float64
+	TransmitBytes   float64
+	TransmitDropped float64
+	TransmitPackets float64
 }
 
 // WiredStats contains wired device network activity statistics.
 type WiredStats struct {
-	ReceiveBytes    int64
-	ReceivePackets  int64
-	TransmitBytes   int64
-	TransmitPackets int64
+	ReceiveBytes    float64
+	ReceivePackets  float64
+	TransmitBytes   float64
+	TransmitPackets float64
 }
 
 const (
@@ -214,7 +214,7 @@ type device struct {
 	// TODO(mdlayher): give all fields appropriate names and data types.
 	ID            string `json:"_id"`
 	Adopted       bool   `json:"adopted"`
-	Bytes         int64  `json:"bytes"`
+	Bytes         float64  `json:"bytes"`
 	ConfigVersion string `json:"cfgversion"`
 	ConfigNetwork struct {
 		IP   string `json:"ip"`
@@ -259,45 +259,45 @@ type device struct {
 		Name           string `json:"name"`
 		Radio          string `json:"radio"`
 	} `json:"radio_table"`
-	RxBytes int64  `json:"rx_bytes"`
+	RxBytes float64  `json:"rx_bytes"`
 	Serial  string `json:"serial,omitempty"`
 	SiteID  string `json:"site_id"`
 	Stat    struct {
-		Bytes            int64  `json:"bytes"`
-		GuestNgTxBytes   int64  `json:"guest-ng-tx_bytes"`
-		GuestNgTxDropped int64  `json:"guest-ng-tx_dropped"`
-		GuestNgTxPackets int64  `json:"guest-ng-tx_packets"`
-		GuestTxBytes     int64  `json:"guest-tx_bytes"`
-		GuestTxDropped   int64  `json:"guest-tx_dropped"`
-		GuestTxPackets   int64  `json:"guest-tx_packets"`
+		Bytes            float64  `json:"bytes"`
+		GuestNgTxBytes   float64  `json:"guest-ng-tx_bytes"`
+		GuestNgTxDropped float64  `json:"guest-ng-tx_dropped"`
+		GuestNgTxPackets float64  `json:"guest-ng-tx_packets"`
+		GuestTxBytes     float64  `json:"guest-tx_bytes"`
+		GuestTxDropped   float64  `json:"guest-tx_dropped"`
+		GuestTxPackets   float64  `json:"guest-tx_packets"`
 		Mac              string `json:"mac"`
-		NgRxBytes        int64  `json:"ng-rx_bytes"`
-		NgRxPackets      int64  `json:"ng-rx_packets"`
-		NgTxBytes        int64  `json:"ng-tx_bytes"`
-		NgTxDropped      int64  `json:"ng-tx_dropped"`
-		NgTxPackets      int64  `json:"ng-tx_packets"`
-		RxBytes          int64  `json:"rx_bytes"`
-		RxPackets        int64  `json:"rx_packets"`
-		TxBytes          int64  `json:"tx_bytes"`
-		TxDropped        int64  `json:"tx_dropped"`
-		TxPackets        int64  `json:"tx_packets"`
-		UplinkRxBytes    int64  `json:"uplink-rx_bytes"`
-		UplinkRxPackets  int64  `json:"uplink-rx_packets"`
-		UplinkTxBytes    int64  `json:"uplink-tx_bytes"`
-		UplinkTxPackets  int64  `json:"uplink-tx_packets"`
-		UserNgRxBytes    int64  `json:"user-ng-rx_bytes"`
-		UserNgRxPackets  int64  `json:"user-ng-rx_packets"`
-		UserNgTxBytes    int64  `json:"user-ng-tx_bytes"`
-		UserNgTxDropped  int64  `json:"user-ng-tx_dropped"`
-		UserNgTxPackets  int64  `json:"user-ng-tx_packets"`
-		UserRxBytes      int64  `json:"user-rx_bytes"`
-		UserRxPackets    int64  `json:"user-rx_packets"`
-		UserTxBytes      int64  `json:"user-tx_bytes"`
-		UserTxDropped    int64  `json:"user-tx_dropped"`
-		UserTxPackets    int64  `json:"user-tx_packets"`
+		NgRxBytes        float64  `json:"ng-rx_bytes"`
+		NgRxPackets      float64  `json:"ng-rx_packets"`
+		NgTxBytes        float64  `json:"ng-tx_bytes"`
+		NgTxDropped      float64  `json:"ng-tx_dropped"`
+		NgTxPackets      float64  `json:"ng-tx_packets"`
+		RxBytes          float64  `json:"rx_bytes"`
+		RxPackets        float64  `json:"rx_packets"`
+		TxBytes          float64  `json:"tx_bytes"`
+		TxDropped        float64  `json:"tx_dropped"`
+		TxPackets        float64  `json:"tx_packets"`
+		UplinkRxBytes    float64  `json:"uplink-rx_bytes"`
+		UplinkRxPackets  float64  `json:"uplink-rx_packets"`
+		UplinkTxBytes    float64  `json:"uplink-tx_bytes"`
+		UplinkTxPackets  float64  `json:"uplink-tx_packets"`
+		UserNgRxBytes    float64  `json:"user-ng-rx_bytes"`
+		UserNgRxPackets  float64  `json:"user-ng-rx_packets"`
+		UserNgTxBytes    float64  `json:"user-ng-tx_bytes"`
+		UserNgTxDropped  float64  `json:"user-ng-tx_dropped"`
+		UserNgTxPackets  float64  `json:"user-ng-tx_packets"`
+		UserRxBytes      float64  `json:"user-rx_bytes"`
+		UserRxPackets    float64  `json:"user-rx_packets"`
+		UserTxBytes      float64  `json:"user-tx_bytes"`
+		UserTxDropped    float64  `json:"user-tx_dropped"`
+		UserTxPackets    float64  `json:"user-tx_packets"`
 	} `json:"stat"`
 	State         int           `json:"state"`
-	TxBytes       int64         `json:"tx_bytes"`
+	TxBytes       float64         `json:"tx_bytes"`
 	Type          string        `json:"type"`
 	UplinkTable   []interface{} `json:"uplink_table"`
 	Uptime        int           `json:"uptime"`
