@@ -1,6 +1,8 @@
 FROM alpine:latest
 
 EXPOSE 9130
-ENTRYPOINT ["/bin/unifi_exporter"]
+CMD ["/bin/unifi_exporter"]
 
-ADD unifi_exporter /bin/unifi_exporter
+RUN apk update ; apk add go ; apk add git ; apk add musl-dev ; \
+    go get github.com/mdlayher/unifi_exporter/cmd/unifi_exporter; \
+    mv ~/go/bin/unifi_exporter /bin/
