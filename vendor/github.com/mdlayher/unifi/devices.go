@@ -79,6 +79,10 @@ type DeviceStats struct {
 	Uplink     *WiredStats
 }
 
+func (s *DeviceStats) String() string {
+	return fmt.Sprintf("%v", *s)
+}
+
 // WirelessStats contains wireless device network activity statistics.
 type WirelessStats struct {
 	ReceiveBytes    float64
@@ -88,12 +92,20 @@ type WirelessStats struct {
 	TransmitPackets float64
 }
 
+func (s *WirelessStats) String() string {
+	return fmt.Sprintf("%v", *s)
+}
+
 // WiredStats contains wired device network activity statistics.
 type WiredStats struct {
 	ReceiveBytes    float64
 	ReceivePackets  float64
 	TransmitBytes   float64
 	TransmitPackets float64
+}
+
+func (s *WiredStats) String() string {
+	return fmt.Sprintf("%v", *s)
 }
 
 const (
@@ -197,10 +209,10 @@ func (d *Device) UnmarshalJSON(b []byte) error {
 				TransmitPackets: dev.Stat.UserTxPackets,
 			},
 			Uplink: &WiredStats{
-				ReceiveBytes:    dev.Stat.UplinkRxBytes,
-				ReceivePackets:  dev.Stat.UplinkRxPackets,
-				TransmitBytes:   dev.Stat.UplinkTxBytes,
-				TransmitPackets: dev.Stat.UplinkTxPackets,
+				ReceiveBytes:    dev.Uplink.RxBytes,
+				ReceivePackets:  dev.Uplink.RxPackets,
+				TransmitBytes:   dev.Uplink.TxBytes,
+				TransmitPackets: dev.Uplink.TxPackets,
 			},
 		},
 	}
@@ -281,10 +293,6 @@ type device struct {
 		TxBytes          float64 `json:"tx_bytes"`
 		TxDropped        float64 `json:"tx_dropped"`
 		TxPackets        float64 `json:"tx_packets"`
-		UplinkRxBytes    float64 `json:"uplink-rx_bytes"`
-		UplinkRxPackets  float64 `json:"uplink-rx_packets"`
-		UplinkTxBytes    float64 `json:"uplink-tx_bytes"`
-		UplinkTxPackets  float64 `json:"uplink-tx_packets"`
 		UserNgRxBytes    float64 `json:"user-ng-rx_bytes"`
 		UserNgRxPackets  float64 `json:"user-ng-rx_packets"`
 		UserNgTxBytes    float64 `json:"user-ng-tx_bytes"`
@@ -296,6 +304,15 @@ type device struct {
 		UserTxDropped    float64 `json:"user-tx_dropped"`
 		UserTxPackets    float64 `json:"user-tx_packets"`
 	} `json:"stat"`
+	Uplink struct {
+		RxBytes   float64 `json:"rx_bytes"`
+		RxPackets float64 `json:"rx_packets"`
+		RxErrors  float64 `json:"rx_errors"`
+		TxBytes   float64 `json:"tx_bytes"`
+		TxPackets float64 `json:"tx_packets"`
+		TxErrors  float64 `json:"tx_errors"`
+		Type      string  `json:"type"`
+	} `json:"uplink"`
 	State         int           `json:"state"`
 	TxBytes       float64       `json:"tx_bytes"`
 	Type          string        `json:"type"`

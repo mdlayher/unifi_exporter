@@ -50,11 +50,13 @@ func TestDeviceCollector(t *testing.T) {
 				"tx_bytes": 20,
 				"rx_packets": 4,
 				"tx_packets": 1,
-				"tx_dropped": 1,
-				"uplink-rx_bytes": 20,
-				"uplink-tx_bytes": 10,
-				"uplink-rx_packets": 2,
-				"uplink-tx_packets": 1
+				"tx_dropped": 1
+			},
+			"uplink": {
+				"rx_bytes": 20,
+				"tx_bytes": 10,
+				"rx_packets": 2,
+				"tx_packets": 1
 			},
 			"uptime": 10
 		}
@@ -128,11 +130,13 @@ func TestDeviceCollector(t *testing.T) {
 				"tx_bytes": 20,
 				"rx_packets": 4,
 				"tx_packets": 1,
-				"tx_dropped": 1,
-				"uplink-rx_bytes": 20,
-				"uplink-tx_bytes": 10,
-				"uplink-rx_packets": 2,
-				"uplink-tx_packets": 1
+				"tx_dropped": 1
+			},
+			"uplink": {
+				"rx_bytes": 20,
+				"tx_bytes": 10,
+				"rx_packets": 2,
+				"tx_packets": 1
 			},
 			"uptime": 10
 		},
@@ -166,11 +170,13 @@ func TestDeviceCollector(t *testing.T) {
 				"tx_bytes": 190,
 				"rx_packets": 1,
 				"tx_packets": 19,
-				"tx_dropped": 1,
-				"uplink-rx_bytes": 40,
-				"uplink-tx_bytes": 20,
-				"uplink-rx_packets": 4,
-				"uplink-tx_packets": 2
+				"tx_dropped": 1
+			},
+			"uplink": {
+				"rx_bytes": 40,
+				"tx_bytes": 20,
+				"rx_packets": 4,
+				"tx_packets": 2
 			},
 			"uptime": 20
 		}
@@ -266,11 +272,13 @@ func TestDeviceCollector(t *testing.T) {
 				"tx_bytes": 20,
 				"rx_packets": 4,
 				"tx_packets": 1,
-				"tx_dropped": 1,
-				"uplink-rx_bytes": 20,
-				"uplink-tx_bytes": 10,
-				"uplink-rx_packets": 2,
-				"uplink-tx_packets": 1
+				"tx_dropped": 1
+			},
+			"uplink": {
+				"rx_bytes": 20,
+				"tx_bytes": 10,
+				"rx_packets": 2,
+				"tx_packets": 1
 			},
 			"uptime": 10
 		}
