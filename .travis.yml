@@ -1,3 +1,7 @@
+sudo: required
+services:
+  - docker
+
 language: go
 go:
   - 1.8
@@ -12,6 +16,7 @@ before_script:
 script:
   - make fmt vet lint test build
   - if ! $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN; then echo "Coveralls not available."; fi
+  - make docker
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
