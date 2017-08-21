@@ -1,10 +1,14 @@
-FROM alpine:latest
+FROM golang:alpine AS build
+ADD . /go/src/github.com/mdlayher/unifi_exporter
+WORKDIR /go/src/github.com/mdlayher/unifi_exporter
+RUN apk --update add make
 
-EXPOSE 9130
+RUN make build
 
-RUN apk update ; apk add go ; apk add git ; apk add musl-dev ; \
-    go get github.com/mdlayher/unifi_exporter/cmd/unifi_exporter; \
-    mv ~/go/bin/unifi_exporter /bin/
+FROM alpine
+WORKDIR /app
+COPY --from=build /go/src/github.com/mdlayher/unifi_exporter /bin/
 
 USER nobody
+EXPOSE 9130
 ENTRYPOINT ["/bin/unifi_exporter"]

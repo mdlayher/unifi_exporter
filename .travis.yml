@@ -8,9 +8,13 @@ before_install:
   - go get github.com/golang/lint/golint
 before_script:
   - go get -d ./...
+
 script:
-  - golint ./...
-  - go vet ./...
-  - go test -v ./...
+  - make fmt vet lint test build
   - if ! $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN; then echo "Coveralls not available."; fi
-  - go build ./...
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push mdlayher/unifi_exporter;
+    fi
