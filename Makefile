@@ -24,7 +24,8 @@ test:
 	@for PKG in $(PACKAGES); do go test -v -cover -coverprofile $$GOPATH/src/$$PKG/coverage.out $$PKG || exit 1; done;
 
 build:
-	go build ./cmd/unifi_exporter
+	$(GO) build ./cmd/unifi_exporter
 
 docker:
+	GOOS=linux GOARCH=amd64 $(GO) build ./cmd/unifi_exporter
 	docker build -t mdlayher/unifi_exporter .
