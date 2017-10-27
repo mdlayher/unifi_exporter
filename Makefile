@@ -1,6 +1,6 @@
 .PHONY: all 
 
-VERSION := 0.4.0
+VERSION := 0.4.1
 
 build:
 	go build -o unifi_exporter_${VERSION}_linux_amd64 ./cmd/unifi_exporter
