@@ -47,6 +47,7 @@ func main() {
 		panic(err)
 	}
 
+	// Kept the variables as they were so other code doesn't need to be messed with.
 	telemetryAddr := config.TelemetryAddr
 	metricsPath   := config.MetricsPath
 	unifiAddr     := config.UnifiAddr
