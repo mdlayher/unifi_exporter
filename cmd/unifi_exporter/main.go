@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 	"io/ioutil"
-
 	"gopkg.in/yaml.v2"
 	"github.com/mdlayher/unifi"
 	"github.com/mdlayher/unifi_exporter"
@@ -18,14 +17,14 @@ import (
 )
 
 type Config struct {
-	TelemetryAddr string `yaml: "telemetryaddr"`
-	MetricsPath string `yaml: "metricspath"`
-	UnifiAddr string `yaml: "unifiaddr"`
-	Username string `yaml: "username"`
-	Password string `yaml: "password"`
-	Site string `yaml: "site"`
-	Insecure bool `yaml: "insecure"`
-	Timeout int `yaml: "timeout"`
+	ListenAddress map[string]string `yaml:"listen"`
+	MetricsPath string `yaml:"metricspath"`
+	UnifiAddress map[string]string `yaml:"unifi"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Site string `yaml:"site"`
+	Insecure bool `yaml:"insecure"`
+	TimeoutSecs int `yaml:"timeoutsecs"`
 }
 
 const (
@@ -34,37 +33,40 @@ const (
 )
 
 func main() {
-	var configFilePath = flag.String("config.file.path", "", "Relative path to config file yaml")
+	var configFile = flag.String("config.file", "", "Relative path to config file yaml")
 	flag.Parse()
 
 	var config Config
-	source, err := ioutil.ReadFile(*configFilePath)
+	source, err := ioutil.ReadFile(*configFile)
 	if err != nil {
 		panic(err)
 	}
-  err = yaml.Unmarshal(source, &config)
+	err = yaml.Unmarshal(source, &config)
 	if err != nil {
 		panic(err)
 	}
 
-	// Kept the variables as they were so other code doesn't need to be messed with.
-	telemetryAddr := config.TelemetryAddr
+	listenAddr    := config.ListenAddress["address"] + ":" + config.ListenAddress["port"]
 	metricsPath   := config.MetricsPath
-	unifiAddr     := config.UnifiAddr
+	unifiAddr     := config.UnifiAddress["address"] + ":" + config.UnifiAddress["port"]
 	username      := config.Username
 	password      := config.Password
 	site          := config.Site
 	insecure      := config.Insecure
-	timeout       := time.Duration(config.Timeout) * time.Second
+	timeoutSecs   := time.Duration(config.TimeoutSecs) * time.Second
 
-	if unifiAddr == "" {
-		log.Fatal("address of UniFi Controller API must be specified within config file: ", *configFilePath)
+	if unifiAddr == ":" {
+		log.Fatal("address of UniFi Controller API must be specified within config file: ", *configFile)
 	}
 	if username == "" {
-		log.Fatal("username to authenticate to UniFi Controller API must be specified within config file: ", *configFilePath)
+		log.Fatal("username to authenticate to UniFi Controller API must be specified within config file: ", *configFile)
 	}
 	if password == "" {
-		log.Fatal("password to authenticate to UniFi Controller API must be specified within config file: ", *configFilePath)
+		log.Fatal("password to authenticate to UniFi Controller API must be specified within config file: ", *configFile)
+	}
+	if config.ListenAddress["port"] == "" {
+		// Set default port to 9130 if left blank in config.yml
+		listenAddr = listenAddr + "9130"
 	}
 
 	clientFn := newClient(
@@ -72,7 +74,7 @@ func main() {
 		username,
 		password,
 		insecure,
-		timeout,
+		timeoutSecs,
 	)
 	c, err := clientFn()
 	if err != nil {
@@ -101,9 +103,9 @@ func main() {
 		http.Redirect(w, r, metricsPath, http.StatusMovedPermanently)
 	})
 
-	log.Printf("Starting UniFi exporter on %q for site(s): %s", telemetryAddr, sitesString(useSites))
+	log.Printf("Starting UniFi exporter on %q for site(s): %s", listenAddr, sitesString(useSites))
 
-	if err := http.ListenAndServe(telemetryAddr, nil); err != nil {
+	if err := http.ListenAndServe(listenAddr, nil); err != nil {
 		log.Fatalf("cannot start UniFi exporter: %s", err)
 	}
 }
@@ -141,11 +143,11 @@ func sitesString(sites []*unifi.Site) string {
 }
 
 // newClient returns a unifiexporter.ClientFunc using the input parameters.
-func newClient(addr, username, password string, insecure bool, timeout time.Duration) unifiexporter.ClientFunc {
+func newClient(addr, username, password string, insecure bool, timeoutSecs time.Duration) unifiexporter.ClientFunc {
 	return func() (*unifi.Client, error) {
-		httpClient := &http.Client{Timeout: timeout}
+		httpClient := &http.Client{Timeout: timeoutSecs}
 		if insecure {
-			httpClient = unifi.InsecureHTTPClient(timeout)
+			httpClient = unifi.InsecureHTTPClient(timeoutSecs)
 		}
 
 		c, err := unifi.NewClient(addr, httpClient)
