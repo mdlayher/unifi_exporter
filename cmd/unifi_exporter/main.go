@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"strconv"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"github.com/mdlayher/unifi"
@@ -17,14 +18,8 @@ import (
 )
 
 type Config struct {
-	ListenAddress map[string]string `yaml:"listen"`
-	MetricsPath string `yaml:"metricspath"`
-	UnifiAddress map[string]string `yaml:"unifi"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Site string `yaml:"site"`
-	Insecure bool `yaml:"insecure"`
-	TimeoutSecs int `yaml:"timeoutsecs"`
+	Listen map[string]string `yaml:"listen"`
+	Unifi map[string]string `yaml:"unifi"`
 }
 
 const (
@@ -46,14 +41,16 @@ func main() {
 		panic(err)
 	}
 
-	listenAddr    := config.ListenAddress["address"] + ":" + config.ListenAddress["port"]
-	metricsPath   := config.MetricsPath
-	unifiAddr     := config.UnifiAddress["address"] + ":" + config.UnifiAddress["port"]
-	username      := config.Username
-	password      := config.Password
-	site          := config.Site
-	insecure      := config.Insecure
-	timeoutSecs   := time.Duration(config.TimeoutSecs) * time.Second
+	listenAddr    := config.Listen["address"] + ":" + config.Listen["port"]
+	metricsPath   := config.Listen["metricspath"]
+	unifiAddr     := config.Unifi["address"] + ":" + config.Unifi["port"]
+	username      := config.Unifi["username"]
+	password      := config.Unifi["password"]
+	site          := config.Unifi["site"]
+	b, err        := strconv.ParseBool(config.Unifi["insecure"])
+	insecure      := b
+	t, err        := strconv.Atoi(config.Unifi["timeoutsecs"])
+	timeoutSecs   := time.Duration(t) * time.Second
 
 	if unifiAddr == ":" {
 		log.Fatal("address of UniFi Controller API must be specified within config file: ", *configFile)
@@ -64,7 +61,7 @@ func main() {
 	if password == "" {
 		log.Fatal("password to authenticate to UniFi Controller API must be specified within config file: ", *configFile)
 	}
-	if config.ListenAddress["port"] == "" {
+	if config.Listen["port"] == "" {
 		// Set default port to 9130 if left blank in config.yml
 		listenAddr = listenAddr + "9130"
 	}

@@ -1,12 +1,12 @@
 listen:
   address:
   port: 9130
-metricspath: /metrics
+  metricspath: /metrics
 unifi:
   address: https://unifi.mydomain.com
   port: 8443
-username:
-password:
-site:
-insecure: true
-timeoutsecs:
+  username:
+  password:
+  site:
+  insecure: true
+  timeoutsecs:
