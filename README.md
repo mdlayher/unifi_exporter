@@ -19,13 +19,16 @@ Usage of ./unifi_exporter:
        Relative path to config file yaml
 ```
 
-To run the exporter, simply populate the included config.yml, then:
+To run the exporter, edit the included config.yml.example, rename it to config.yml, then run the exporter like so:
 
 ```
 $ ./unifi_exporter -config.file.path config.yml
 2017/11/15 17:06:32 [INFO] successfully authenticated to UniFi controller
 2017/11/15 17:06:32 Starting UniFi exporter on ":9130" for site(s): Default
 ```
+
+The minimum you'll need to modify is the unifi address, username and password. The port defaults to 8443 as specified in the config file,
+and the defaults in 'listen' are sufficient for most users.
 
 Sample
 ------

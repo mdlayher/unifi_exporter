@@ -8,5 +8,5 @@ unifi:
   username:
   password:
   site:
-  insecure: true
+  insecure: false
   timeoutsecs:
