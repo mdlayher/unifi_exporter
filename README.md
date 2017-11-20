@@ -15,14 +15,14 @@ Usage
 ```
 $ ./unifi_exporter -h
 Usage of ./unifi_exporter:
-  -config.file.path string
+  -config.file string
        Relative path to config file yaml
 ```
 
 To run the exporter, edit the included config.yml.example, rename it to config.yml, then run the exporter like so:
 
 ```
-$ ./unifi_exporter -config.file.path config.yml
+$ ./unifi_exporter -config.file config.yml
 2017/11/15 17:06:32 [INFO] successfully authenticated to UniFi controller
 2017/11/15 17:06:32 Starting UniFi exporter on ":9130" for site(s): Default
 ```
