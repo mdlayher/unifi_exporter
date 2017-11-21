@@ -49,7 +49,7 @@ func main() {
 	site := config.Unifi["site"]
 	b, err := strconv.ParseBool(config.Unifi["insecure"])
 	if err != nil {
-		log.Fatalf("failed to parse bool %q: %v", b, err)
+		log.Fatalf("failed to parse bool %t: %v", b, err)
 	}
 	insecure := b
 	t, err := time.ParseDuration(config.Unifi["timeout"])
