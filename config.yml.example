@@ -9,4 +9,4 @@ unifi:
   password:
   site:
   insecure: false
-  timeoutsecs:
+  timeout: 5s

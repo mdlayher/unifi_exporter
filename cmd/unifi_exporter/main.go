@@ -5,21 +5,21 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"net/http"
-	"strings"
-	"time"
-	"strconv"
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
 	"github.com/mdlayher/unifi"
 	"github.com/mdlayher/unifi_exporter"
 	"github.com/prometheus/client_golang/prometheus"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type Config struct {
 	Listen map[string]string `yaml:"listen"`
-	Unifi map[string]string `yaml:"unifi"`
+	Unifi  map[string]string `yaml:"unifi"`
 }
 
 const (
@@ -34,23 +34,29 @@ func main() {
 	var config Config
 	source, err := ioutil.ReadFile(*configFile)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to read config file %q: %v", *configFile, err)
 	}
 	err = yaml.Unmarshal(source, &config)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to read YAML from config file %q: %v", *configFile, err)
 	}
 
-	listenAddr    := config.Listen["address"] + ":" + config.Listen["port"]
-	metricsPath   := config.Listen["metricspath"]
-	unifiAddr     := config.Unifi["address"] + ":" + config.Unifi["port"]
-	username      := config.Unifi["username"]
-	password      := config.Unifi["password"]
-	site          := config.Unifi["site"]
-	b, err        := strconv.ParseBool(config.Unifi["insecure"])
-	insecure      := b
-	t, err        := strconv.Atoi(config.Unifi["timeoutsecs"])
-	timeoutSecs   := time.Duration(t) * time.Second
+	listenAddr := config.Listen["address"] + ":" + config.Listen["port"]
+	metricsPath := config.Listen["metricspath"]
+	unifiAddr := config.Unifi["address"] + ":" + config.Unifi["port"]
+	username := config.Unifi["username"]
+	password := config.Unifi["password"]
+	site := config.Unifi["site"]
+	b, err := strconv.ParseBool(config.Unifi["insecure"])
+	if err != nil {
+		log.Fatalf("failed to parse bool %q: %v", b, err)
+	}
+	insecure := b
+	t, err := time.ParseDuration(config.Unifi["timeout"])
+	if err != nil {
+		log.Fatalf("failed to parse duration %q: %v", t, err)
+	}
+	timeout := t
 
 	if unifiAddr == ":" {
 		log.Fatal("address of UniFi Controller API must be specified within config file: ", *configFile)
@@ -71,7 +77,7 @@ func main() {
 		username,
 		password,
 		insecure,
-		timeoutSecs,
+		timeout,
 	)
 	c, err := clientFn()
 	if err != nil {
@@ -140,11 +146,11 @@ func sitesString(sites []*unifi.Site) string {
 }
 
 // newClient returns a unifiexporter.ClientFunc using the input parameters.
-func newClient(addr, username, password string, insecure bool, timeoutSecs time.Duration) unifiexporter.ClientFunc {
+func newClient(addr, username, password string, insecure bool, timeout time.Duration) unifiexporter.ClientFunc {
 	return func() (*unifi.Client, error) {
-		httpClient := &http.Client{Timeout: timeoutSecs}
+		httpClient := &http.Client{Timeout: timeout}
 		if insecure {
-			httpClient = unifi.InsecureHTTPClient(timeoutSecs)
+			httpClient = unifi.InsecureHTTPClient(timeout)
 		}
 
 		c, err := unifi.NewClient(addr, httpClient)
