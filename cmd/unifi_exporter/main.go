@@ -41,9 +41,9 @@ func main() {
 		log.Fatalf("failed to read YAML from config file %q: %v", *configFile, err)
 	}
 
-	listenAddr := config.Listen["address"] + ":" + config.Listen["port"]
+	listenAddr := config.Listen["address"]
 	metricsPath := config.Listen["metricspath"]
-	unifiAddr := config.Unifi["address"] + ":" + config.Unifi["port"]
+	unifiAddr := config.Unifi["address"]
 	username := config.Unifi["username"]
 	password := config.Unifi["password"]
 	site := config.Unifi["site"]
@@ -58,7 +58,7 @@ func main() {
 	}
 	timeout := t
 
-	if unifiAddr == ":" {
+	if unifiAddr == "" {
 		log.Fatal("address of UniFi Controller API must be specified within config file: ", *configFile)
 	}
 	if username == "" {
@@ -67,9 +67,9 @@ func main() {
 	if password == "" {
 		log.Fatal("password to authenticate to UniFi Controller API must be specified within config file: ", *configFile)
 	}
-	if config.Listen["port"] == "" {
+	if listenAddr == "" {
 		// Set default port to 9130 if left blank in config.yml
-		listenAddr = listenAddr + "9130"
+		listenAddr = ":9130"
 	}
 
 	clientFn := newClient(

@@ -1,10 +1,8 @@
 listen:
-  address:
-  port: 9130
+  address: :9130
   metricspath: /metrics
 unifi:
-  address: https://unifi.mydomain.com
-  port: 8443
+  address: https://unifi.mydomain.com:8443
   username:
   password:
   site:
