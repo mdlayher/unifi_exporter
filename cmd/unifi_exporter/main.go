@@ -5,16 +5,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/mdlayher/unifi"
-	"github.com/mdlayher/unifi_exporter"
-	"github.com/prometheus/client_golang/prometheus"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mdlayher/unifi"
+	"github.com/mdlayher/unifi_exporter"
+	"github.com/prometheus/client_golang/prometheus"
+	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
