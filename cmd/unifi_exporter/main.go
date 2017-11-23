@@ -48,16 +48,16 @@ func main() {
 	username := config.Unifi["username"]
 	password := config.Unifi["password"]
 	site := config.Unifi["site"]
-	b, err := strconv.ParseBool(config.Unifi["insecure"])
+	ins := config.Unifi["insecure"]
+	insecure, err := strconv.ParseBool(ins)
 	if err != nil {
-		log.Fatalf("failed to parse bool %t: %v", b, err)
+		log.Fatalf("failed to parse bool %s: %v", ins, err)
 	}
-	insecure := b
-	t, err := time.ParseDuration(config.Unifi["timeout"])
+	to := config.Unifi["timeout"]
+	timeout, err := time.ParseDuration(to)
 	if err != nil {
-		log.Fatalf("failed to parse duration %q: %v", t, err)
+		log.Fatalf("failed to parse duration %q: %v", to, err)
 	}
-	timeout := t
 
 	if unifiAddr == "" {
 		log.Fatal("address of UniFi Controller API must be specified within config file: ", *configFile)
