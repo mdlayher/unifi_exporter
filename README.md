@@ -12,35 +12,23 @@ MIT Licensed.
 Usage
 -----
 
-Available flags for `unifi_exporter` include:
-
 ```
 $ ./unifi_exporter -h
 Usage of ./unifi_exporter:
-  -telemetry.addr string
-        host:port for UniFi exporter (default ":9130")
-  -telemetry.path string
-        URL path for surfacing collected metrics (default "/metrics")
-  -unifi.addr string
-        address of UniFi Controller API
-  -unifi.insecure
-        [optional] do not verify TLS certificate for UniFi Controller API (warning: please use carefully)
-  -unifi.password string
-        password for authentication against UniFi Controller API
-  -unifi.site string
-        [optional] description of site to collect metrics for using UniFi Controller API; if none specified, all sites will be scraped
-  -unifi.timeout duration
-        [optional] timeout for UniFi Controller API requests (default 5s)
-  -unifi.username string
-        username for authentication against UniFi Controller API
+  -config.file string
+       Relative path to config file yaml
 ```
 
-An example of using `unifi_exporter` with authentication:
+To run the exporter, edit the included config.yml.example, rename it to config.yml, then run the exporter like so:
 
 ```
-$ ./unifi_exporter -unifi.addr https://unifi.example.com:8443/ -unifi.username admin -unifi.password password
-2016/02/24 13:41:34 Starting UniFi exporter on ":9130" for site(s): Foo, Bar, Baz
+$ ./unifi_exporter -config.file config.yml
+2017/11/15 17:06:32 [INFO] successfully authenticated to UniFi controller
+2017/11/15 17:06:32 Starting UniFi exporter on ":9130" for site(s): Default
 ```
+
+The minimum you'll need to modify is the unifi address, username and password. The port defaults to 8443 as specified in the config file,
+and the defaults in 'listen' are sufficient for most users.
 
 Sample
 ------

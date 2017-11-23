@@ -1,0 +1,10 @@
+listen:
+  address: :9130
+  metricspath: /metrics
+unifi:
+  address: https://unifi.mydomain.com:8443
+  username:
+  password:
+  site:
+  insecure: false
+  timeout: 5s
