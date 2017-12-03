@@ -9,6 +9,21 @@ Prometheus exporter.
 
 MIT Licensed.
 
+Seeking additional maintainers
+------------------------------
+
+Due to the wide variety of UniFi devices available, and because the UniFi
+APIs are unstable, Matt Layher is unable to dedicate the time and energy
+needed to maintain this exporter on his own.
+
+At this time, there are no official releases or Docker images available.
+Building the exporter from master is the expected method to deploy it.
+
+If you are interested in maintaining this exporter and have demonstrated
+a history of submitting solid improvements to the project, I am happy to
+grant push access to remove myself as a roadblock for progress.
+
+
 Usage
 -----
 
