@@ -48,15 +48,21 @@ func main() {
 	username := config.Unifi["username"]
 	password := config.Unifi["password"]
 	site := config.Unifi["site"]
-	ins := config.Unifi["insecure"]
-	insecure, err := strconv.ParseBool(ins)
-	if err != nil {
-		log.Fatalf("failed to parse bool %s: %v", ins, err)
+
+	insecure := false
+	if ins, ok := config.Unifi["insecure"]; ok {
+		insecure, err = strconv.ParseBool(ins)
+		if err != nil {
+			log.Fatalf("failed to parse bool %s: %v", ins, err)
+		}
 	}
-	to := config.Unifi["timeout"]
-	timeout, err := time.ParseDuration(to)
-	if err != nil {
-		log.Fatalf("failed to parse duration %q: %v", to, err)
+
+	timeout := 5*time.Second
+	if to, ok := config.Unifi["timeout"]; ok {
+		timeout, err = time.ParseDuration(to)
+		if err != nil {
+			log.Fatalf("failed to parse duration %q: %v", to, err)
+		}
 	}
 
 	if unifiAddr == "" {
@@ -71,6 +77,9 @@ func main() {
 	if listenAddr == "" {
 		// Set default port to 9130 if left blank in config.yml
 		listenAddr = ":9130"
+	}
+	if metricsPath == "" {
+		metricsPath = "/metrics"
 	}
 
 	clientFn := newClient(

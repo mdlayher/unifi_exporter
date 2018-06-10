@@ -156,24 +156,21 @@ func (d *Device) UnmarshalJSON(b []byte) error {
 			Name:               rt.Name,
 		}
 
-		// 5GHz and 2.4GHz station counts appear in different keys for
-		// different radio types, so we check the radio type first to determine
-		// where the correct radio statistics are
+		for _, v := range dev.RadioTableStats {
+			if v.Name == rt.Name {
+				r.Stats = &RadioStationsStats{
+					NumberStations:      v.NumSta,
+					NumberUserStations:  v.UserNumSta,
+					NumberGuestStations: v.GuestNumSta,
+				}
+			}
+		}
+
 		switch rt.Radio {
 		case radioNA:
 			r.Radio = radio5GHz
-			r.Stats = &RadioStationsStats{
-				NumberStations:      dev.NaNumSta,
-				NumberUserStations:  dev.NaUserNumSta,
-				NumberGuestStations: dev.NaGuestNumSta,
-			}
 		case radioNG:
 			r.Radio = radio24GHz
-			r.Stats = &RadioStationsStats{
-				NumberStations:      dev.NgNumSta,
-				NumberUserStations:  dev.NgUserNumSta,
-				NumberGuestStations: dev.NgGuestNumSta,
-			}
 		}
 
 		radios = append(radios, r)
@@ -208,6 +205,13 @@ func (d *Device) UnmarshalJSON(b []byte) error {
 				TransmitDropped: dev.Stat.UserTxDropped,
 				TransmitPackets: dev.Stat.UserTxPackets,
 			},
+			Guest: &WirelessStats{
+				ReceiveBytes:    dev.Stat.GuestRxBytes,
+				ReceivePackets:  dev.Stat.GuestRxPackets,
+				TransmitBytes:   dev.Stat.GuestTxBytes,
+				TransmitDropped: dev.Stat.GuestTxDropped,
+				TransmitPackets: dev.Stat.GuestTxPackets,
+			},
 			Uplink: &WiredStats{
 				ReceiveBytes:    dev.Uplink.RxBytes,
 				ReceivePackets:  dev.Uplink.RxPackets,
@@ -238,24 +242,17 @@ type device struct {
 		Name    string `json:"name"`
 		NumPort int    `json:"num_port"`
 	} `json:"ethernet_table"`
-	GuestNumSta   int         `json:"guest-num_sta"`
-	HasSpeaker    bool        `json:"has_speaker"`
-	InformIP      string      `json:"inform_ip"`
-	InformURL     string      `json:"inform_url"`
-	IP            string      `json:"ip"`
-	LastSeen      int         `json:"last_seen"`
-	MAC           string      `json:"mac"`
-	Model         string      `json:"model"`
-	Name          string      `json:"name"`
-	NaGuestNumSta int         `json:"na-guest-num_sta"`
-	NaNumSta      int         `json:"na-num_sta"`
-	NaUserNumSta  int         `json:"na-user-num_sta"`
-	NgGuestNumSta int         `json:"ng-guest-num_sta"`
-	NgNumSta      int         `json:"ng-num_sta"`
-	NgUserNumSta  int         `json:"ng-user-num_sta"`
-	NumSta        int         `json:"num_sta"`
-	RadioNa       interface{} `json:"radio_na"`
-	RadioNg       struct {
+	GuestNumSta int    `json:"guest-num_sta"`
+	HasSpeaker  bool   `json:"has_speaker"`
+	InformIP    string `json:"inform_ip"`
+	InformURL   string `json:"inform_url"`
+	IP          string `json:"ip"`
+	LastSeen    int    `json:"last_seen"`
+	MAC         string `json:"mac"`
+	Model       string `json:"model"`
+	Name        string `json:"name"`
+	NumSta      int    `json:"num_sta"`
+	RadioNg     struct {
 		BuiltInAntennaGain int    `json:"builtin_ant_gain"`
 		BuiltInAntenna     bool   `json:"builtin_antenna"`
 		MaxTXPower         int    `json:"max_txpower"`
@@ -271,38 +268,47 @@ type device struct {
 		Name           string `json:"name"`
 		Radio          string `json:"radio"`
 	} `json:"radio_table"`
+	RadioTableStats []struct {
+		AstBeXmit   int         `json:"ast_be_xmit"`
+		AstCst      int         `json:"ast_cst"`
+		AstTxto     interface{} `json:"ast_txto"`
+		Channel     int         `json:"channel"`
+		CuSelfRx    int         `json:"cu_self_rx"`
+		CuSelfTx    int         `json:"cu_self_tx"`
+		CuTotal     int         `json:"cu_total"`
+		Extchannel  int         `json:"extchannel"`
+		Gain        int         `json:"gain"`
+		GuestNumSta int         `json:"guest-num_sta"`
+		Name        string      `json:"name"`
+		NumSta      int         `json:"num_sta"`
+		Radio       string      `json:"radio"`
+		State       string      `json:"state"`
+		TxPackets   int         `json:"tx_packets"`
+		TxPower     int         `json:"tx_power"`
+		TxRetries   int         `json:"tx_retries"`
+		UserNumSta  int         `json:"user-num_sta"`
+	} `json:"radio_table_stats"`
 	RxBytes float64 `json:"rx_bytes"`
 	Serial  string  `json:"serial,omitempty"`
 	SiteID  string  `json:"site_id"`
 	Stat    struct {
-		Bytes            float64 `json:"bytes"`
-		GuestNgTxBytes   float64 `json:"guest-ng-tx_bytes"`
-		GuestNgTxDropped float64 `json:"guest-ng-tx_dropped"`
-		GuestNgTxPackets float64 `json:"guest-ng-tx_packets"`
-		GuestTxBytes     float64 `json:"guest-tx_bytes"`
-		GuestTxDropped   float64 `json:"guest-tx_dropped"`
-		GuestTxPackets   float64 `json:"guest-tx_packets"`
-		Mac              string  `json:"mac"`
-		NgRxBytes        float64 `json:"ng-rx_bytes"`
-		NgRxPackets      float64 `json:"ng-rx_packets"`
-		NgTxBytes        float64 `json:"ng-tx_bytes"`
-		NgTxDropped      float64 `json:"ng-tx_dropped"`
-		NgTxPackets      float64 `json:"ng-tx_packets"`
-		RxBytes          float64 `json:"rx_bytes"`
-		RxPackets        float64 `json:"rx_packets"`
-		TxBytes          float64 `json:"tx_bytes"`
-		TxDropped        float64 `json:"tx_dropped"`
-		TxPackets        float64 `json:"tx_packets"`
-		UserNgRxBytes    float64 `json:"user-ng-rx_bytes"`
-		UserNgRxPackets  float64 `json:"user-ng-rx_packets"`
-		UserNgTxBytes    float64 `json:"user-ng-tx_bytes"`
-		UserNgTxDropped  float64 `json:"user-ng-tx_dropped"`
-		UserNgTxPackets  float64 `json:"user-ng-tx_packets"`
-		UserRxBytes      float64 `json:"user-rx_bytes"`
-		UserRxPackets    float64 `json:"user-rx_packets"`
-		UserTxBytes      float64 `json:"user-tx_bytes"`
-		UserTxDropped    float64 `json:"user-tx_dropped"`
-		UserTxPackets    float64 `json:"user-tx_packets"`
+		Bytes          float64 `json:"bytes"`
+		GuestRxBytes   float64 `json:"guest-rx_bytes"`
+		GuestRxPackets float64 `json:"guest-rx_packets"`
+		GuestTxBytes   float64 `json:"guest-tx_bytes"`
+		GuestTxDropped float64 `json:"guest-tx_dropped"`
+		GuestTxPackets float64 `json:"guest-tx_packets"`
+		Mac            string  `json:"mac"`
+		RxBytes        float64 `json:"rx_bytes"`
+		RxPackets      float64 `json:"rx_packets"`
+		TxBytes        float64 `json:"tx_bytes"`
+		TxDropped      float64 `json:"tx_dropped"`
+		TxPackets      float64 `json:"tx_packets"`
+		UserRxBytes    float64 `json:"user-rx_bytes"`
+		UserRxPackets  float64 `json:"user-rx_packets"`
+		UserTxBytes    float64 `json:"user-tx_bytes"`
+		UserTxDropped  float64 `json:"user-tx_dropped"`
+		UserTxPackets  float64 `json:"user-tx_packets"`
 	} `json:"stat"`
 	Uplink struct {
 		RxBytes   float64 `json:"rx_bytes"`
